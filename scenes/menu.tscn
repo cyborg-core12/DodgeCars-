@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://b0r2yamwgfx33"]
+
+[ext_resource type="Script" uid="uid://d2d4vqqio1g2t" path="res://scripts/menu.gd" id="1_yqeox"]
+
+[node name="Menu" type="Control" unique_id=1027216335]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yqeox")
+
+[node name="Title" type="Label" parent="." unique_id=1407206064]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Box" type="VBoxContainer" parent="." unique_id=624513934]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PlayButton" type="Button" parent="Box" unique_id=841922667]
+layout_mode = 2
+
+[node name="QuitButton" type="Button" parent="Box" unique_id=522116779]
+layout_mode = 2
