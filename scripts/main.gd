@@ -2,8 +2,8 @@ extends Node2D
 
 var enemy_scene = preload("res://scenes/enemy.tscn")
 var coin_scene = preload("res://scenes/coin.tscn")
+var cone_scene = preload("res://scenes/cone.tscn")
 
-# Réglages du niveau 1
 var lanes = [180, 300]
 var enemy_speed = 300.0
 var spawn_time = 1.6
@@ -25,10 +25,10 @@ func _ready():
 	setup_design()
 	show_message("Niveau 1\nLa route de campagne")
 
-# ---------- DESIGN ----------
+
 
 func setup_design():
-	# Score en haut à gauche
+	
 	$HUD/ScoreLabel.position = Vector2(12, 10)
 	style_label($HUD/ScoreLabel, 22, Color.WHITE)
 
@@ -114,13 +114,19 @@ func _process(delta):
 		line_offset -= 80
 	queue_redraw()
 
+
 func spawn_enemy():
+	# Une chance sur quatre d'avoir une zone de chantier
+	if randf() < 0.25:
+		spawn_cones()
+		return
+ 
 	var enemy_lane = lanes.pick_random()
 	var enemy = enemy_scene.instantiate()
 	enemy.position = Vector2(enemy_lane, -100)
 	enemy.speed = enemy_speed
 	add_child(enemy)
-
+ 
 	# Une chance sur deux de mettre une pièce dans une voie libre
 	if randf() < 0.5:
 		var free_lanes = lanes.duplicate()
@@ -129,6 +135,16 @@ func spawn_enemy():
 		coin.position = Vector2(free_lanes.pick_random(), -100)
 		coin.speed = enemy_speed
 		add_child(coin)
+ 
+func spawn_cones():
+	var lane = lanes.pick_random()
+	# Rangée de 3 cônes dans la même voie
+	for i in 3:
+		var cone = cone_scene.instantiate()
+		cone.position = Vector2(lane, -60 - i * 70)
+		cone.speed = enemy_speed
+		add_child(cone)
+
 
 func _on_coin_collected():
 	coins += 1

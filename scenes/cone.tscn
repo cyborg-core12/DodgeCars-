@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://ce08jia87d2r5"]
+
+[ext_resource type="Script" uid="uid://cybjuuahwttff" path="res://scripts/cone.gd" id="1_04qlx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7ck5e"]
+radius = 14.0
+
+[node name="Cone" type="Area2D" unique_id=1900981383]
+script = ExtResource("1_04qlx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1448692670]
+shape = SubResource("CircleShape2D_7ck5e")
