@@ -3,7 +3,6 @@ extends Node2D
 var enemy_scene = preload("res://scenes/enemy.tscn")
 var coin_scene = preload("res://scenes/coin.tscn")
 
-# Réglages du niveau 1
 var lanes = [180, 300]
 var enemy_speed = 300.0
 var spawn_time = 1.6
@@ -28,7 +27,7 @@ func _ready():
 # ---------- DESIGN ----------
 
 func setup_design():
-	# Score en haut à gauche
+	
 	$HUD/ScoreLabel.position = Vector2(12, 10)
 	style_label($HUD/ScoreLabel, 22, Color.WHITE)
 
