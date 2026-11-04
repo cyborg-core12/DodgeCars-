@@ -24,7 +24,7 @@ func _ready():
 	setup_design()
 	show_message("Niveau 1\nLa route de campagne")
 
-# ---------- DESIGN ----------
+
 
 func setup_design():
 	
