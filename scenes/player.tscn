@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bstjyk6f5ku3g"]
+
+[ext_resource type="Texture2D" uid="uid://1wsf7jah3odl" path="res://assets/car_red_1.png" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://dbidik26e7gse" path="res://scripts/player.gd" id="1_g2els"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cb8fh"]
+size = Vector2(73, 138)
+
+[node name="Player" type="Area2D" unique_id=2106013074]
+script = ExtResource("1_g2els")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=978213173]
+texture = ExtResource("1_3vyb7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1438886009]
+position = Vector2(-0.5, -1)
+shape = SubResource("RectangleShape2D_cb8fh")

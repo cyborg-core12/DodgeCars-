@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://uodo1xdnskeq"]
+
+[ext_resource type="Script" uid="uid://bebhomlxe4716" path="res://scripts/main.gd" id="1_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://bstjyk6f5ku3g" path="res://scenes/player.tscn" id="2_sugp2"]
+
+[node name="Main" type="Node2D" unique_id=561509023]
+script = ExtResource("1_0wfyh")
+
+[node name="Player" parent="." unique_id=2106013074 instance=ExtResource("2_sugp2")]
+
+[node name="SpawnTimer" type="Timer" parent="." unique_id=1500369924]
+wait_time = 1.2
+autostart = true
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=216091660]
+
+[node name="ScoreLabel" type="Label" parent="HUD" unique_id=532993565]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="GameOver" type="VBoxContainer" parent="HUD" unique_id=1156992036]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FinalLabel" type="Label" parent="HUD/GameOver" unique_id=153116569]
+layout_mode = 2
+
+[node name="RestartButton" type="Button" parent="HUD/GameOver" unique_id=1002444078]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="HUD" unique_id=277755837]
+offset_right = 4.0
+offset_bottom = 27.0
+
+[node name="LevelLabel" type="Label" parent="HUD" unique_id=30837022]
+offset_right = 40.0
+offset_bottom = 23.0

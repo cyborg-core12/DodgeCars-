@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cvfuufkoc5lo4"]
+
+[ext_resource type="Texture2D" uid="uid://bqlemefs17j2e" path="res://assets/car_green_1.png" id="1_7p1mj"]
+[ext_resource type="Script" uid="uid://bpjybkuedar8" path="res://scripts/enemy.gd" id="1_md0e3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cb8fh"]
+size = Vector2(77, 134)
+
+[node name="Enemy" type="Area2D" unique_id=1500016616]
+script = ExtResource("1_md0e3")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=968830020]
+rotation = 3.1415927
+texture = ExtResource("1_7p1mj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=445819444]
+position = Vector2(-0.5, 3)
+shape = SubResource("RectangleShape2D_cb8fh")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=222075286]
+rect = Rect2(-38, -65, 78, 141)
