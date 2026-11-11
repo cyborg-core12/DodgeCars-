@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bebhomlxe4716" path="res://scripts/main.gd" id="1_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://bstjyk6f5ku3g" path="res://scenes/player.tscn" id="2_sugp2"]
+[ext_resource type="AudioStream" uid="uid://bfmdnhmp01u46" path="res://assets/engine.wav" id="3_sugp2"]
 
 [node name="Main" type="Node2D" unique_id=561509023]
 script = ExtResource("1_0wfyh")
@@ -35,3 +36,7 @@ offset_bottom = 27.0
 [node name="LevelLabel" type="Label" parent="HUD" unique_id=30837022]
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="EngineSound" type="AudioStreamPlayer" parent="." unique_id=679680308]
+stream = ExtResource("3_sugp2")
+volume_db = -10.0
