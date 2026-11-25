@@ -31,16 +31,38 @@ var time = 0.0
 
 var fx: Node2D   # calque dessiné PAR-DESSUS la voiture (bouclier, aimant)
 
+const CAR_HEIGHT = 135.0          # hauteur de la voiture à l'écran
+var car_size = Vector2(71, 131)   # taille réelle de la voiture à l'écran
+
 
 func _ready():
 	add_to_group("player")
 	position = Vector2(lanes[current_lane], 670)
 	area_entered.connect(_on_area_entered)
+	apply_car(GameData.car_settings())
 
 	fx = Node2D.new()
 	add_child(fx)
 	fx.draw.connect(_draw_fx)
 	_create_exhaust()
+
+
+# Applique la voiture choisie dans le garage : image, taille, maniabilité et bouclier
+func apply_car(settings: Dictionary):
+	var texture = load(settings.texture)
+	$Sprite2D.texture = texture
+	var s = CAR_HEIGHT / texture.get_height()
+	$Sprite2D.scale = Vector2(s, s)
+	car_size = texture.get_size() * s
+
+	# La zone de collision suit la taille de la voiture (un peu plus petite, pour être juste)
+	var shape = RectangleShape2D.new()
+	shape.size = car_size * Vector2(0.8, 0.86)
+	$CollisionShape2D.shape = shape
+	$CollisionShape2D.position = Vector2.ZERO
+
+	move_speed = settings.handling
+	shield_time = settings.shield
 
 
 func set_lanes(new_lanes):
@@ -155,14 +177,15 @@ func _on_danger(obstacle):
 
 func _draw():
 	# Ombre
-	draw_rect(Rect2(-35 + 6, -65 + 8, 71, 131), Color(0, 0, 0, 0.3))
+	draw_rect(Rect2(-car_size / 2 + Vector2(6, 8), car_size), Color(0, 0, 0, 0.3))
 	# Phares la nuit
 	if night and alive:
 		var beam = Color(1, 0.95, 0.6, 0.22)
+		var front = -car_size.y / 2 + 4
 		for side in [-20, 20]:
 			draw_colored_polygon(PackedVector2Array([
-				Vector2(side - 6, -62), Vector2(side + 6, -62),
-				Vector2(side + 30, -320), Vector2(side - 30, -320),
+				Vector2(side - 6, front), Vector2(side + 6, front),
+				Vector2(side + 30, front - 258), Vector2(side - 30, front - 258),
 			]), beam)
 
 
@@ -181,7 +204,7 @@ func _draw_fx():
 # Fumée du pot d'échappement (particules)
 func _create_exhaust():
 	var smoke = CPUParticles2D.new()
-	smoke.position = Vector2(-16, 64)
+	smoke.position = Vector2(-car_size.x * 0.22, car_size.y / 2 - 2)
 	smoke.amount = 24
 	smoke.lifetime = 0.5
 	smoke.local_coords = false

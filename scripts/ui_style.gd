@@ -104,6 +104,13 @@ static func style_button(button: Button, text: String, color: Color, font_size :
 	button.focus_exited.connect(func(): _bounce(button, 1.0))
 
 
+# Change seulement la couleur d'un bouton déjà stylé
+static func recolor_button(button: Button, color: Color) -> void:
+	button.add_theme_stylebox_override("normal", _button_box(color, 6))
+	button.add_theme_stylebox_override("hover", _button_box(color.lightened(0.15), 6))
+	button.add_theme_stylebox_override("pressed", _button_box(color.darkened(0.1), 2))
+
+
 static func _button_box(color: Color, depth: int) -> StyleBoxFlat:
 	var box = make_box(color, 16)
 	box.border_color = color.darkened(0.35)

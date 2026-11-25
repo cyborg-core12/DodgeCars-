@@ -60,6 +60,52 @@ const LEVELS = [
 	},
 ]
 
+# Voitures du garage. "handling" = vitesse pour changer de voie,
+# "shield" = secondes de bouclier au départ de la partie.
+const CARS = [
+	{
+		"name": "LA ROUGE",
+		"tagline": "La voiture de départ. Équilibrée, idéale pour apprendre.",
+		"texture": "res://assets/car_red_1.png",
+		"color": Color("ef476f"),
+		"handling": 12.0,
+		"shield": 0.0,
+	},
+	{
+		"name": "LE ROVER",
+		"tagline": "Large et lent à tourner, mais blindé : bouclier de 10 s au départ.",
+		"texture": "res://assets/car_rover.png",
+		"color": Color("e9c46a"),
+		"handling": 9.0,
+		"shield": 10.0,
+	},
+	{
+		"name": "F1 ARGENT",
+		"tagline": "Fine et nerveuse. Se faufile partout.",
+		"texture": "res://assets/car_f1_silver.png",
+		"color": Color("ced4da"),
+		"handling": 16.0,
+		"shield": 0.0,
+	},
+	{
+		"name": "F1 BLEUE",
+		"tagline": "La plus maniable du garage. Pour les pilotes rapides !",
+		"texture": "res://assets/car_f1_blue.png",
+		"color": Color("4cc9f0"),
+		"handling": 19.0,
+		"shield": 0.0,
+	},
+	{
+		"name": "LA PANTHÈRE",
+		"tagline": "Sportive noire, rapide et compacte.",
+		"texture": "res://assets/car_black_sport.png",
+		"color": Color("b388ff"),
+		"handling": 15.0,
+		"shield": 0.0,
+	},
+]
+
+var car = 0                   # voiture choisie dans le garage
 var level = 1                 # niveau choisi dans le menu (1, 2 ou 3)
 var best_scores = [0, 0, 0]   # un record par niveau
 var best_stars = [0, 0, 0]    # étoiles gagnées par niveau (0 = pas encore terminé)
@@ -75,6 +121,11 @@ func settings() -> Dictionary:
 	return LEVELS[level - 1]
 
 
+# Réglages de la voiture choisie
+func car_settings() -> Dictionary:
+	return CARS[car]
+
+
 # Record du niveau choisi
 func best_score() -> int:
 	return best_scores[level - 1]
@@ -87,6 +138,7 @@ func load_data():
 			best_scores[i] = config.get_value("records", "niveau_%d" % (i + 1), 0)
 			best_stars[i] = config.get_value("etoiles", "niveau_%d" % (i + 1), 0)
 		total_coins = config.get_value("joueur", "pieces", 0)
+		car = clamp(config.get_value("joueur", "voiture", 0), 0, CARS.size() - 1)
 
 
 func save_data():
@@ -95,6 +147,7 @@ func save_data():
 		config.set_value("records", "niveau_%d" % (i + 1), best_scores[i])
 		config.set_value("etoiles", "niveau_%d" % (i + 1), best_stars[i])
 	config.set_value("joueur", "pieces", total_coins)
+	config.set_value("joueur", "voiture", car)
 	config.save(SAVE_PATH)
 
 

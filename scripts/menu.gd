@@ -2,10 +2,13 @@ extends Control
 
 ## Menu principal : route animée en fond, titre, record et boutons.
 
-var car_texture = preload("res://assets/car_red_1.png")
 var road: Road
-var car: Node2D
+var car: Node2D                # voiture qui roule en bas du menu
+var car_sprite: Sprite2D
+var subtitle: Label
 var record_panel: Panel
+var garage_button: Button
+var garage: Control            # écran Garage (voir garage.gd)
 var level_box: VBoxContainer   # écran de choix du niveau
 var level_buttons = []
 var time = 0.0
@@ -32,6 +35,11 @@ func _ready():
 	$Box/PlayButton.pressed.connect(_on_play)
 	$Box/QuitButton.pressed.connect(_on_quit)
 	setup_design()
+
+	garage = preload("res://scripts/garage.gd").new()
+	add_child(garage)
+	garage.closed.connect(_on_garage_closed)
+
 	# Permet de choisir avec les flèches et Entrée
 	$Box/PlayButton.grab_focus()
 
@@ -63,6 +71,23 @@ func _on_back():
 	$Box/PlayButton.grab_focus()
 
 
+# "Garage" ouvre la vitrine des voitures
+func _on_garage():
+	_set_main_visible(false)
+	garage.open()
+
+
+func _on_garage_closed():
+	_set_main_visible(true)
+	_update_car()
+	garage_button.grab_focus()
+
+
+func _set_main_visible(value: bool):
+	for node in [$Box, $Title, subtitle, record_panel, car]:
+		node.visible = value
+
+
 func _start_level(number: int):
 	GameData.level = number
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
@@ -81,13 +106,27 @@ func _on_quit():
 
 func _create_car():
 	car = Node2D.new()
-	car.position = Vector2(240, 690)
-	car.draw.connect(func(): car.draw_rect(Rect2(-35 + 6, -65 + 8, 71, 131), Color(0, 0, 0, 0.3)))
-	var sprite = Sprite2D.new()
-	sprite.texture = car_texture
-	car.add_child(sprite)
+	car.position = Vector2(240, 700)
+	car.draw.connect(_draw_car_shadow)
+	car_sprite = Sprite2D.new()
+	car.add_child(car_sprite)
 	add_child(car)
 	move_child(car, 2)
+	_update_car()
+
+
+# Affiche la voiture choisie dans le garage, à la même taille qu'en jeu
+func _update_car():
+	var texture = load(GameData.car_settings().texture)
+	car_sprite.texture = texture
+	var s = 135.0 / texture.get_height()
+	car_sprite.scale = Vector2(s, s)
+	car.queue_redraw()
+
+
+func _draw_car_shadow():
+	var car_size = car_sprite.texture.get_size() * car_sprite.scale
+	car.draw_rect(Rect2(-car_size / 2 + Vector2(6, 8), car_size), Color(0, 0, 0, 0.3))
 
 
 func setup_design():
@@ -101,17 +140,25 @@ func setup_design():
 	title.add_theme_constant_override("shadow_offset_y", 8)
 	title.pivot_offset = Vector2(240, 120)
 
-	add_child(UIStyle.make_label("ÉVITE  ·  RAMASSE  ·  SURVIS", 18, Color.WHITE, Vector2(0, 300), Vector2(480, 30)))
+	subtitle = UIStyle.make_label("ÉVITE  ·  RAMASSE  ·  SURVIS", 18, Color.WHITE, Vector2(0, 300), Vector2(480, 30))
+	add_child(subtitle)
 
-	# Boutons
-	$Box.position = Vector2(100, 360)
-	$Box.size = Vector2(280, 150)
-	$Box.add_theme_constant_override("separation", 18)
+	# Boutons : Jouer, Garage, Quitter
+	$Box.position = Vector2(100, 345)
+	$Box.size = Vector2(280, 200)
+	$Box.add_theme_constant_override("separation", 14)
 	UIStyle.style_button($Box/PlayButton, "JOUER", UIStyle.ORANGE, 34)
+	garage_button = Button.new()
+	UIStyle.style_button(garage_button, "GARAGE", UIStyle.BLUE.darkened(0.2), 26)
+	garage_button.custom_minimum_size = Vector2(0, 56)
+	garage_button.pressed.connect(_on_garage)
+	$Box.add_child(garage_button)
+	$Box.move_child(garage_button, 1)
 	UIStyle.style_button($Box/QuitButton, "QUITTER", UIStyle.GREY, 24)
+	$Box/QuitButton.custom_minimum_size = Vector2(0, 56)
 
 	# Meilleur record (tous niveaux) et pièces sauvegardées
-	record_panel = UIStyle.make_panel(Vector2(90, 530), Vector2(300, 66))
+	record_panel = UIStyle.make_panel(Vector2(90, 560), Vector2(300, 66))
 	add_child(record_panel)
 	record_panel.add_child(UIStyle.make_label("RECORD : %d" % GameData.best_scores.max(), 22, UIStyle.YELLOW, Vector2(0, 6), Vector2(300, 30)))
 	record_panel.add_child(UIStyle.make_label("PIÈCES GAGNÉES : %d" % GameData.total_coins, 14, Color.WHITE, Vector2(0, 38), Vector2(300, 20)))
