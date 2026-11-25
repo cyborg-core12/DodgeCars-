@@ -1,29 +1,26 @@
 extends Control
 
-## Barres de statistiques d'une voiture dans le garage (maniabilité, finesse, protection).
-## Les barres se remplissent avec une petite animation.
+# Barres de stats du garage
 
 const NAMES = ["MANIABILITÉ", "FINESSE", "PROTECTION"]
 
-var values = [0.0, 0.0, 0.0]    # valeurs affichées en ce moment
-var targets = [0.0, 0.0, 0.0]   # valeurs à atteindre (entre 0 et 1)
+var values = [0.0, 0.0, 0.0]
+var targets = [0.0, 0.0, 0.0]
 var color = Color.WHITE
 
 
-# Donne les nouvelles valeurs à afficher et la couleur des barres
 func set_stats(new_targets: Array, new_color: Color):
 	targets = new_targets
 	color = new_color
 
 
-# À chaque image : les barres glissent doucement vers leur nouvelle valeur
+# Animation des barres
 func _process(delta):
 	for i in 3:
 		values[i] = lerp(values[i], targets[i], 8 * delta)
 	queue_redraw()
 
 
-# Dessine le nom de chaque statistique et sa barre
 func _draw():
 	for i in 3:
 		var y = i * 30.0

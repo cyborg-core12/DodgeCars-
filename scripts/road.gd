@@ -1,8 +1,7 @@
 class_name Road
 extends Node2D
 
-## Dessine la route, l'herbe et le décor qui défile.
-## Le décor et les couleurs changent selon la zone (campagne, ville, désert, nuit).
+# Route et décor qui défilent
 
 const ZONES = [
 	{
@@ -30,19 +29,17 @@ const ZONES = [
 const BUILDING_COLORS = [Color("e76f51"), Color("457b9d"), Color("8d6a9f"), Color("f4a261")]
 
 var lanes = [130, 240, 350]
-@export var speed = 300.0   # vitesse de défilement (modifiable dans l'inspecteur)
-var scroll = 0.0     # distance totale défilée (en pixels)
+@export var speed = 300.0
+var scroll = 0.0
 var zone = 0
-var decor = []       # liste des éléments de décor sur les côtés
-var finish_y = -9999.0   # position de la ligne d'arrivée (-9999 = pas encore visible)
+var decor = []
+var finish_y = -9999.0
 
-# Couleurs actuelles : elles glissent doucement vers celles de la zone
 var grass: Color
 var grass_dark: Color
 var road_color: Color
 
 
-# Au lancement : couleurs de la première zone et décor de départ
 func _ready():
 	var first_zone = ZONES[0]
 	grass = first_zone.grass
@@ -52,7 +49,6 @@ func _ready():
 		decor.append(_new_decor(randf_range(-100, 800)))
 
 
-# instant = true : les couleurs changent tout de suite (sans transition)
 func set_zone(index: int, instant := false):
 	zone = index
 	if instant:
@@ -63,22 +59,18 @@ func set_zone(index: int, instant := false):
 			decor[i] = _new_decor(decor[i].y)
 
 
-# Fait apparaître la ligne d'arrivée en haut de l'écran
 func show_finish_line():
 	finish_y = -60.0
 
 
-# Position x du bord gauche de la route
 func road_left() -> float:
 	return lanes[0] - 58
 
 
-# Position x du bord droit de la route
 func road_right() -> float:
 	return lanes[-1] + 58
 
 
-# Crée un élément de décor au hasard (arbre, immeuble...) sur un côté de la route
 func _new_decor(y: float) -> Dictionary:
 	var on_left = randf() < 0.5
 	var x
@@ -95,19 +87,16 @@ func _new_decor(y: float) -> Dictionary:
 	}
 
 
-# À chaque image : défilement de la route et du décor, changement de couleurs
 func _process(delta):
 	scroll += speed * delta
 	if finish_y > -9999.0:
 		finish_y += speed * delta
 
-	# Le décor descend ; quand il sort en bas, on le recrée en haut
 	for i in decor.size():
 		decor[i].y += speed * delta
 		if decor[i].y > 900:
 			decor[i] = _new_decor(randf_range(-260, -80))
 
-	# Transition douce des couleurs vers la nouvelle zone
 	var target = ZONES[zone]
 	var t = clamp(delta * 1.5, 0.0, 1.0)
 	grass = grass.lerp(target.grass, t)
@@ -116,28 +105,23 @@ func _process(delta):
 	queue_redraw()
 
 
-# Dessine l'herbe, la route, les bordures, les lignes et le décor
 func _draw():
 	var left = road_left()
 	var right = road_right()
 
-	# Herbe avec des bandes (donne une impression de vitesse)
 	draw_rect(Rect2(0, 0, 480, 800), grass)
 	var y = fmod(scroll, 160.0) - 160.0
 	while y < 800:
 		draw_rect(Rect2(0, y, 480, 80), grass_dark)
 		y += 160
 
-	# Bas-côté, puis la route
 	draw_rect(Rect2(left - 18, 0, right - left + 36, 800), road_color.lightened(0.25))
 	draw_rect(Rect2(left, 0, right - left, 800), road_color)
 
-	# Traces de pneus sur chaque voie
 	for x in lanes:
 		for side in [-22, 22]:
 			draw_rect(Rect2(x + side - 5, 0, 10, 800), Color(0, 0, 0, 0.08))
 
-	# Bordures rouges et blanches
 	y = fmod(scroll, 80.0) - 80.0
 	while y < 800:
 		for x in [left - 10, right]:
@@ -145,7 +129,6 @@ func _draw():
 			draw_rect(Rect2(x, y + 40, 10, 40), Color("f1f1f1"))
 		y += 80
 
-	# Lignes pointillées entre les voies
 	for i in lanes.size() - 1:
 		var line_x = (lanes[i] + lanes[i + 1]) / 2.0
 		y = fmod(scroll, 80.0) - 80.0
@@ -160,7 +143,7 @@ func _draw():
 		_draw_finish_line(left, right)
 
 
-# Ligne d'arrivée en damier noir et blanc, avec deux poteaux et une banderole
+# Ligne d'arrivée
 func _draw_finish_line(left: float, right: float):
 	var square = 20.0
 	var x = left
@@ -172,18 +155,15 @@ func _draw_finish_line(left: float, right: float):
 				Color.WHITE if white else Color("111111"))
 		x += square
 		column += 1
-	# Poteaux
 	for pole_x in [left - 24, right + 14]:
 		draw_rect(Rect2(pole_x + 4, finish_y - 50, 10, 100), Color(0, 0, 0, 0.3))
 		draw_rect(Rect2(pole_x, finish_y - 56, 10, 100), Color("dee2e6"))
-	# Banderole
 	var banner = Rect2(left - 20, finish_y - 64, right - left + 40, 30)
 	draw_rect(banner, UIStyle.RED)
 	draw_string(UIStyle.font(), Vector2(banner.position.x, banner.position.y + 24), "ARRIVÉE",
 		HORIZONTAL_ALIGNMENT_CENTER, banner.size.x, 22, Color.WHITE)
 
 
-# Dessine un élément de décor selon son type
 func _draw_decor(item: Dictionary):
 	var p = Vector2(item.x, item.y)
 	var s = item.size
@@ -201,7 +181,6 @@ func _draw_decor(item: Dictionary):
 			for o in parts:
 				draw_circle(p + o * s, 12 * s, Color("52b788"))
 		"building":
-			# Immeuble vu du dessus : on voit son toit
 			var color = BUILDING_COLORS[item.color]
 			var size = Vector2(64, 96) * s
 			var rect = Rect2(p - size / 2, size)

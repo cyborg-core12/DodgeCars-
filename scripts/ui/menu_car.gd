@@ -1,11 +1,10 @@
 extends Node2D
 
-## Voiture qui roule en bas du menu principal (c'est la voiture choisie au garage).
+# Voiture qui roule dans le menu
 
-const CAR_HEIGHT = 135.0   # même hauteur qu'en jeu
+const CAR_HEIGHT = 135.0
 
 
-# Affiche la voiture choisie, à la bonne taille
 func show_car(texture: Texture2D):
 	$Sprite2D.texture = texture
 	var s = CAR_HEIGHT / texture.get_height()
@@ -13,7 +12,6 @@ func show_car(texture: Texture2D):
 	queue_redraw()
 
 
-# Dessine l'ombre sous la voiture
 func _draw():
 	if $Sprite2D.texture == null:
 		return
