@@ -9,7 +9,6 @@ signal coin_collected(coin_position)
 signal powerup_collected(kind, item_position)
 signal slipped                    # a roulé dans l'huile
 
-const MAX_LIVES = 3
 const INVINCIBLE_DURATION = 1.5
 const SHIELD_DURATION = 8.0
 const MAGNET_DURATION = 8.0
@@ -18,7 +17,8 @@ const SLIP_DURATION = 2.5
 var lanes = [130, 240, 350]
 var current_lane = 1
 var move_speed = 12.0
-var lives = MAX_LIVES
+var max_lives = 3   # dépend du niveau (main.gd le change)
+var lives = 3
 var alive = true
 var night = false   # phares allumés la nuit
 
@@ -124,7 +124,7 @@ func _on_area_entered(area):
 			magnet_time = MAGNET_DURATION
 			_collect(area)
 		"heart":
-			lives = min(lives + 1, MAX_LIVES)
+			lives = min(lives + 1, max_lives)
 			_collect(area)
 
 

@@ -34,6 +34,7 @@ var speed = 300.0
 var scroll = 0.0     # distance totale défilée (en pixels)
 var zone = 0
 var decor = []       # liste des éléments de décor sur les côtés
+var finish_y = -9999.0   # position de la ligne d'arrivée (-9999 = pas encore visible)
 
 # Couleurs actuelles : elles glissent doucement vers celles de la zone
 var grass: Color
@@ -50,8 +51,20 @@ func _ready():
 		decor.append(_new_decor(randf_range(-100, 800)))
 
 
-func set_zone(index: int):
+# instant = true : les couleurs changent tout de suite (sans transition)
+func set_zone(index: int, instant := false):
 	zone = index
+	if instant:
+		grass = ZONES[index].grass
+		grass_dark = ZONES[index].grass_dark
+		road_color = ZONES[index].road
+		for i in decor.size():
+			decor[i] = _new_decor(decor[i].y)
+
+
+# Fait apparaître la ligne d'arrivée en haut de l'écran
+func show_finish_line():
+	finish_y = -60.0
 
 
 func road_left() -> float:
@@ -80,6 +93,8 @@ func _new_decor(y: float) -> Dictionary:
 
 func _process(delta):
 	scroll += speed * delta
+	if finish_y > -9999.0:
+		finish_y += speed * delta
 
 	# Le décor descend ; quand il sort en bas, on le recrée en haut
 	for i in decor.size():
@@ -134,6 +149,32 @@ func _draw():
 
 	for item in decor:
 		_draw_decor(item)
+
+	if finish_y > -9999.0:
+		_draw_finish_line(left, right)
+
+
+# Ligne d'arrivée en damier noir et blanc, avec deux poteaux et une banderole
+func _draw_finish_line(left: float, right: float):
+	var square = 20.0
+	var x = left
+	var column = 0
+	while x < right:
+		for row in 2:
+			var white = (column + row) % 2 == 0
+			draw_rect(Rect2(x, finish_y + row * square, min(square, right - x), square),
+				Color.WHITE if white else Color("111111"))
+		x += square
+		column += 1
+	# Poteaux
+	for pole_x in [left - 24, right + 14]:
+		draw_rect(Rect2(pole_x + 4, finish_y - 50, 10, 100), Color(0, 0, 0, 0.3))
+		draw_rect(Rect2(pole_x, finish_y - 56, 10, 100), Color("dee2e6"))
+	# Banderole
+	var banner = Rect2(left - 20, finish_y - 64, right - left + 40, 30)
+	draw_rect(banner, UIStyle.RED)
+	draw_string(UIStyle.font(), Vector2(banner.position.x, banner.position.y + 24), "ARRIVÉE",
+		HORIZONTAL_ALIGNMENT_CENTER, banner.size.x, 22, Color.WHITE)
 
 
 func _draw_decor(item: Dictionary):

@@ -5,6 +5,9 @@ extends Control
 var car_texture = preload("res://assets/car_red_1.png")
 var road: Road
 var car: Node2D
+var record_panel: Panel
+var level_box: VBoxContainer   # écran de choix du niveau
+var level_buttons = []
 var time = 0.0
 
 
@@ -43,8 +46,31 @@ func _process(delta):
 	car.rotation = cos(time * 0.9) * 0.6 * 0.9
 
 
+# "Jouer" ouvre le choix du niveau
 func _on_play():
+	$Box.hide()
+	record_panel.hide()
+	car.hide()
+	level_box.show()
+	level_buttons[GameData.level - 1].grab_focus()
+
+
+func _on_back():
+	level_box.hide()
+	$Box.show()
+	record_panel.show()
+	car.show()
+	$Box/PlayButton.grab_focus()
+
+
+func _start_level(number: int):
+	GameData.level = number
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
+
+
+func _unhandled_input(event):
+	if level_box.visible and event.is_action_pressed("ui_cancel"):
+		_on_back()
 
 
 func _on_quit():
@@ -84,11 +110,49 @@ func setup_design():
 	UIStyle.style_button($Box/PlayButton, "JOUER", UIStyle.ORANGE, 34)
 	UIStyle.style_button($Box/QuitButton, "QUITTER", UIStyle.GREY, 24)
 
-	# Record et pièces sauvegardés
-	var panel = UIStyle.make_panel(Vector2(90, 530), Vector2(300, 66))
-	add_child(panel)
-	panel.add_child(UIStyle.make_label("RECORD : %d" % GameData.best_score, 22, UIStyle.YELLOW, Vector2(0, 6), Vector2(300, 30)))
-	panel.add_child(UIStyle.make_label("PIÈCES GAGNÉES : %d" % GameData.total_coins, 14, Color.WHITE, Vector2(0, 38), Vector2(300, 20)))
+	# Meilleur record (tous niveaux) et pièces sauvegardées
+	record_panel = UIStyle.make_panel(Vector2(90, 530), Vector2(300, 66))
+	add_child(record_panel)
+	record_panel.add_child(UIStyle.make_label("RECORD : %d" % GameData.best_scores.max(), 22, UIStyle.YELLOW, Vector2(0, 6), Vector2(300, 30)))
+	record_panel.add_child(UIStyle.make_label("PIÈCES GAGNÉES : %d" % GameData.total_coins, 14, Color.WHITE, Vector2(0, 38), Vector2(300, 20)))
+
+	_build_level_select()
+
+
+# Écran de choix du niveau : un bouton par niveau, avec sa description et son record
+func _build_level_select():
+	level_box = VBoxContainer.new()
+	level_box.position = Vector2(60, 318)
+	level_box.size = Vector2(360, 440)
+	level_box.add_theme_constant_override("separation", 4)
+	add_child(level_box)
+
+	var title = UIStyle.make_label("CHOISIS TON NIVEAU", 24, Color.WHITE, Vector2.ZERO, Vector2.ZERO)
+	title.custom_minimum_size = Vector2(0, 44)
+	level_box.add_child(title)
+
+	for i in GameData.LEVELS.size():
+		var settings = GameData.LEVELS[i]
+		var button = Button.new()
+		UIStyle.style_button(button, "NIVEAU %d  ·  %s" % [i + 1, settings.name], settings.color, 24)
+		button.pressed.connect(_start_level.bind(i + 1))
+		level_box.add_child(button)
+		level_buttons.append(button)
+
+		var stars = GameData.best_stars[i]
+		var done = "Étoiles : %d/3" % stars if stars > 0 else "Pas encore terminé"
+		var info = UIStyle.make_label("%s\n%s  ·  Record : %d" % [settings.description, done, GameData.best_scores[i]],
+			13, Color("dee2e6"), Vector2.ZERO, Vector2.ZERO)
+		info.add_theme_constant_override("outline_size", 4)
+		info.custom_minimum_size = Vector2(0, 40)
+		level_box.add_child(info)
+
+	var back = Button.new()
+	UIStyle.style_button(back, "Retour", UIStyle.GREY, 20)
+	back.custom_minimum_size = Vector2(0, 50)
+	back.pressed.connect(_on_back)
+	level_box.add_child(back)
+	level_box.hide()
 
 	var hint = UIStyle.make_label("← → / Q D : changer de voie   ·   P : pause", 14, Color.WHITE, Vector2(0, 765), Vector2(480, 26))
 	hint.add_theme_constant_override("outline_size", 4)

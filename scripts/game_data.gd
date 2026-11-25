@@ -1,11 +1,68 @@
 extends Node
 
 ## Données gardées entre les scènes (chargé automatiquement : "Autoload" GameData).
-## Sauvegarde le meilleur score et le total de pièces dans un fichier local.
+## Contient les réglages des 3 niveaux et sauvegarde records et étoiles dans un fichier local.
 
 const SAVE_PATH = "user://sauvegarde.cfg"
 
-var best_score = 0
+# Réglages de chaque niveau. Chaque niveau a son décor, sa longueur et sa difficulté.
+const LEVELS = [
+	{
+		"name": "FACILE",
+		"description": "La campagne · 1200 m · route calme",
+		"color": Color("06d6a0"),
+		"zone": 0,                    # décor (voir road.gd) : 0 = campagne
+		"goal": 1200.0,               # mètres jusqu'à la ligne d'arrivée
+		"start_speed": 260.0,         # vitesse au départ
+		"max_speed": 420.0,           # vitesse juste avant l'arrivée
+		"spawn_start": 1.7,           # secondes entre deux obstacles au départ
+		"spawn_min": 1.1,             # ... et juste avant l'arrivée
+		"lives": 3,
+		"lane_changers": false,       # voitures qui changent de voie ?
+		"double_cars": 2.0,           # dès quelle progression (0 à 1) : 2 voitures côte à côte (2 = jamais)
+		"oil": false,                 # flaques d'huile ?
+		"bonus_chance": 1.5,          # multiplie la chance d'avoir un bonus
+		"score_multiplier": 1,
+	},
+	{
+		"name": "NORMAL",
+		"description": "La ville · 2000 m · huile et clignotants",
+		"color": Color("ff6b35"),
+		"zone": 1,                    # la ville
+		"goal": 2000.0,
+		"start_speed": 380.0,
+		"max_speed": 650.0,
+		"spawn_start": 1.15,
+		"spawn_min": 0.7,
+		"lives": 3,
+		"lane_changers": true,
+		"double_cars": 0.2,
+		"oil": true,
+		"bonus_chance": 1.0,
+		"score_multiplier": 2,
+	},
+	{
+		"name": "DIFFICILE",
+		"description": "La nuit · 3000 m · 2 vies, très rapide",
+		"color": Color("ef476f"),
+		"zone": 3,                    # la nuit
+		"goal": 3000.0,
+		"start_speed": 560.0,
+		"max_speed": 950.0,
+		"spawn_start": 0.8,
+		"spawn_min": 0.45,
+		"lives": 2,
+		"lane_changers": true,
+		"double_cars": 0.0,
+		"oil": true,
+		"bonus_chance": 0.5,
+		"score_multiplier": 3,
+	},
+]
+
+var level = 1                 # niveau choisi dans le menu (1, 2 ou 3)
+var best_scores = [0, 0, 0]   # un record par niveau
+var best_stars = [0, 0, 0]    # étoiles gagnées par niveau (0 = pas encore terminé)
 var total_coins = 0
 
 
@@ -13,25 +70,42 @@ func _ready():
 	load_data()
 
 
+# Réglages du niveau choisi
+func settings() -> Dictionary:
+	return LEVELS[level - 1]
+
+
+# Record du niveau choisi
+func best_score() -> int:
+	return best_scores[level - 1]
+
+
 func load_data():
 	var config = ConfigFile.new()
 	if config.load(SAVE_PATH) == OK:
-		best_score = config.get_value("joueur", "meilleur_score", 0)
+		for i in LEVELS.size():
+			best_scores[i] = config.get_value("records", "niveau_%d" % (i + 1), 0)
+			best_stars[i] = config.get_value("etoiles", "niveau_%d" % (i + 1), 0)
 		total_coins = config.get_value("joueur", "pieces", 0)
 
 
 func save_data():
 	var config = ConfigFile.new()
-	config.set_value("joueur", "meilleur_score", best_score)
+	for i in LEVELS.size():
+		config.set_value("records", "niveau_%d" % (i + 1), best_scores[i])
+		config.set_value("etoiles", "niveau_%d" % (i + 1), best_stars[i])
 	config.set_value("joueur", "pieces", total_coins)
 	config.save(SAVE_PATH)
 
 
 # Enregistre une partie terminée. Renvoie true si c'est un nouveau record.
-func submit_score(score: int, coins: int) -> bool:
+# stars = 0 si le joueur a perdu, 1 à 3 s'il a passé la ligne d'arrivée.
+func submit_score(score: int, coins: int, stars: int) -> bool:
 	total_coins += coins
-	var is_record = score > best_score
+	var i = level - 1
+	best_stars[i] = max(best_stars[i], stars)
+	var is_record = score > best_scores[i]
 	if is_record:
-		best_score = score
+		best_scores[i] = score
 	save_data()
 	return is_record

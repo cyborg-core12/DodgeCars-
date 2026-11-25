@@ -46,7 +46,8 @@ func _process(delta):
 		has_changed = true
 		target_x = lanes[target_lane]
 
-	position.x = move_toward(position.x, target_x, 170 * delta)
+	# Plus la route va vite, plus le changement de voie est rapide (pour rester évitable)
+	position.x = move_toward(position.x, target_x, world_speed * 0.45 * delta)
 	# La voiture tourne légèrement quand elle se déplace sur le côté
 	rotation = clamp(-(target_x - position.x) * 0.004, -0.3, 0.3)
 	queue_redraw()

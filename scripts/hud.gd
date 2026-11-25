@@ -5,8 +5,10 @@ extends CanvasLayer
 
 signal restart_requested
 signal menu_requested
+signal next_requested
 
 var playing = true
+var max_lives = 3
 var lives = 3
 var shield_time = 0.0
 var magnet_time = 0.0
@@ -28,10 +30,15 @@ var flash: ColorRect
 var pause_menu: Control
 var resume_button: Button
 var game_over_menu: Control
+var final_title: Label
+var stars_display: Control
 var record_label: Label
 var final_score: Label
 var final_stats: Label
+var next_button: Button
 var restart_button: Button
+var stars = 0
+var level_text = ""
 
 var message_tween: Tween
 var combo_tween: Tween
@@ -180,15 +187,30 @@ func _build_pause_menu() -> Control:
 	return overlay
 
 
+# Écran de fin, utilisé pour la victoire ET le game over
 func _build_game_over() -> Control:
 	var overlay = _make_overlay()
-	var card = UIStyle.make_panel(Vector2(30, 120), Vector2(420, 560))
+	var card = UIStyle.make_panel(Vector2(30, 90), Vector2(420, 640))
 	overlay.add_child(card)
-	var box = _make_menu_box(card, Vector2(360, 512))
-	_box_label(box, "GAME OVER", 52, UIStyle.RED, 70)
-	record_label = _box_label(box, "NOUVEAU RECORD !", 24, UIStyle.YELLOW, 34)
-	final_score = _box_label(box, "0", 64, Color.WHITE, 80)
-	final_stats = _box_label(box, "", 20, Color("dee2e6"), 110)
+	var box = _make_menu_box(card, Vector2(360, 592))
+	box.add_theme_constant_override("separation", 10)
+	final_title = _box_label(box, "GAME OVER", 46, UIStyle.RED, 64)
+
+	stars_display = Control.new()
+	stars_display.custom_minimum_size = Vector2(0, 60)
+	stars_display.draw.connect(_draw_stars)
+	box.add_child(stars_display)
+
+	record_label = _box_label(box, "NOUVEAU RECORD !", 22, UIStyle.YELLOW, 30)
+	final_score = _box_label(box, "0", 60, Color.WHITE, 72)
+	final_stats = _box_label(box, "", 18, Color("dee2e6"), 90)
+
+	next_button = Button.new()
+	UIStyle.style_button(next_button, "Niveau suivant", UIStyle.GREEN, 26)
+	next_button.pressed.connect(func():
+		get_tree().paused = false
+		next_requested.emit())
+	box.add_child(next_button)
 
 	restart_button = Button.new()
 	UIStyle.style_button(restart_button, "Rejouer", UIStyle.ORANGE, 28)
@@ -204,11 +226,13 @@ func _build_game_over() -> Control:
 
 # ---------- MISE À JOUR (appelée par main.gd) ----------
 
-func update_stats(score, best, coins, new_lives, zone_progress, shield, magnet, slip):
+func update_stats(score, best, coins, new_lives, distance, goal, shield, magnet, slip):
 	score_label.text = str(score)
 	best_label.text = "RECORD %d" % max(best, score)
 	coins_label.text = str(coins)
-	zone_bar.size.x = 440 * zone_progress
+	# Progression vers la ligne d'arrivée
+	zone_bar.size.x = 440 * clamp(distance / goal, 0.0, 1.0)
+	zone_label.text = "%s   ·   %d / %d m" % [level_text, min(distance, goal), goal]
 	if new_lives != lives:
 		lives = new_lives
 		hearts.queue_redraw()
@@ -218,8 +242,11 @@ func update_stats(score, best, coins, new_lives, zone_progress, shield, magnet, 
 	warning_label.visible = slip > 0
 
 
-func set_zone(number: int, zone_name: String):
-	zone_label.text = "ZONE %d  ·  %s" % [number, zone_name.to_upper()]
+func set_level(number: int, level_name: String, zone_name: String, color: Color):
+	level_text = "NIVEAU %d  ·  %s  ·  %s" % [number, level_name, zone_name.to_upper()]
+	zone_label.text = level_text
+	# La barre de progression prend la couleur du niveau
+	zone_bar.add_theme_stylebox_override("panel", UIStyle.make_box(color, 5, 0))
 
 
 func show_message(text: String):
@@ -255,17 +282,43 @@ func flash_screen(color: Color):
 	tween.tween_property(flash, "color:a", 0.0, 0.4)
 
 
-func show_game_over(score: int, distance: int, coins: int, best: int, is_record: bool):
+func show_game_over(score: int, distance: int, goal: int, coins: int, best: int, is_record: bool):
+	final_title.text = "GAME OVER"
+	final_title.add_theme_color_override("font_color", UIStyle.RED)
+	stars = 0
+	stars_display.hide()
+	next_button.hide()
+	final_stats.text = "Niveau %d (%s)\nTu as fait %d m sur %d m\nPièces : %d  ·  Record : %d" % [
+		GameData.level, GameData.settings().name, distance, goal, coins, best]
+	_show_end_screen(score, is_record)
+
+
+func show_victory(score: int, new_stars: int, coins: int, best: int, is_record: bool, has_next: bool):
+	final_title.text = "NIVEAU RÉUSSI !"
+	final_title.add_theme_color_override("font_color", UIStyle.GREEN)
+	stars = new_stars
+	stars_display.show()
+	stars_display.queue_redraw()
+	next_button.visible = has_next
+	var hint = "Aucune vie perdue, parfait !" if new_stars == 3 else "Perds moins de vies pour 3 étoiles"
+	final_stats.text = "Niveau %d (%s)\n%s\nPièces : %d  ·  Record : %d" % [
+		GameData.level, GameData.settings().name, hint, coins, best]
+	_show_end_screen(score, is_record)
+
+
+func _show_end_screen(score: int, is_record: bool):
 	playing = false
 	record_label.visible = is_record
-	final_stats.text = "Distance : %d m\nPièces : %d\nRecord : %d" % [distance, coins, best]
 	game_over_menu.modulate.a = 0.0
 	game_over_menu.show()
 	var tween = create_tween()
 	tween.tween_property(game_over_menu, "modulate:a", 1.0, 0.3)
 	# Le score défile de 0 jusqu'au score final
 	tween.tween_method(func(value): final_score.text = str(int(value)), 0.0, float(score), 1.0)
-	restart_button.grab_focus()
+	if next_button.visible:
+		next_button.grab_focus()
+	else:
+		restart_button.grab_focus()
 
 
 # ---------- PAUSE ET BOUTONS ----------
@@ -303,9 +356,25 @@ func _go_menu():
 # ---------- DESSINS ----------
 
 func _draw_hearts():
-	for i in 3:
+	for i in max_lives:
 		var color = UIStyle.RED if i < lives else Color(1, 1, 1, 0.15)
 		UIStyle.draw_heart(hearts, Vector2(18 + i * 36, 21), 30, color)
+
+
+func _draw_stars():
+	var center_x = stars_display.size.x / 2
+	for i in 3:
+		var color = UIStyle.YELLOW if i < stars else Color(1, 1, 1, 0.15)
+		draw_star(stars_display, Vector2(center_x + (i - 1) * 62, 30), 26, color)
+
+
+static func draw_star(canvas: CanvasItem, center: Vector2, radius: float, color: Color):
+	var points = PackedVector2Array()
+	for i in 10:
+		var r = radius if i % 2 == 0 else radius * 0.45
+		var angle = -PI / 2 + i * PI / 5
+		points.append(center + Vector2(cos(angle), sin(angle)) * r)
+	canvas.draw_colored_polygon(points, color)
 
 
 func _draw_powerups():
