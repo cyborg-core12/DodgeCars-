@@ -1,6 +1,6 @@
-extends Area2D
+extends Obstacle
 
-var speed = 300.0
+## Voiture ennemie. Certaines changent de voie en mettant leur clignotant !
 
 var textures = [
 	preload("res://assets/car_black_4.png"),
@@ -8,12 +8,63 @@ var textures = [
 	preload("res://assets/car_yellow_4.png"),
 ]
 
-func _ready():
-	add_to_group("enemies")
-	
-	$Sprite2D.texture = textures.pick_random()
-	
-	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free)
+var lane_changer = false   # true = cette voiture va changer de voie
+var lanes = []
+var target_lane = 0
+var target_x = 0.0
+var direction = 0          # -1 = vers la gauche, 1 = vers la droite
+var has_changed = false
+var time = 0.0
 
+
+# Au démarrage : on choisit une couleur de voiture au hasard
+func _ready():
+	super()
+	kind = "danger"
+	$Sprite2D.texture = textures.pick_random()
+	target_x = position.x
+
+
+# Appelé par main.gd pour transformer cette voiture en "changeuse de voie"
+func make_lane_changer(lane_list: Array, current_lane: int):
+	lanes = lane_list
+	lane_changer = true
+	if current_lane == 0:
+		direction = 1
+	elif current_lane == lanes.size() - 1:
+		direction = -1
+	else:
+		direction = [-1, 1].pick_random()
+	target_lane = current_lane + direction
+
+
+# À chaque image : la voiture descend (script parent) puis change de voie si besoin
 func _process(delta):
-	position.y += speed * delta
+	super(delta)
+	time += delta
+
+	# Arrivée en haut de l'écran : la voiture se déporte dans la voie voisine
+	if lane_changer and not has_changed and position.y > 140:
+		has_changed = true
+		target_x = lanes[target_lane]
+
+	# Plus la route va vite, plus le changement de voie est rapide (pour rester évitable)
+	position.x = move_toward(position.x, target_x, world_speed * 0.45 * delta)
+	# La voiture tourne légèrement quand elle se déplace sur le côté
+	rotation = clamp(-(target_x - position.x) * 0.004, -0.3, 0.3)
+	queue_redraw()
+
+
+# Dessine l'ombre de la voiture et, si besoin, son clignotant
+func _draw():
+	# Ombre sous la voiture
+	draw_rect(Rect2(-35 + 6, -65 + 8, 71, 131), Color(0, 0, 0, 0.3))
+
+	# Clignotant orange, du côté où la voiture va tourner
+	var turning = not has_changed or abs(target_x - position.x) > 2
+	if lane_changer and turning:
+		if fmod(time, 0.4) < 0.2:
+			var side = direction * 40
+			for y in [-50, 50]:
+				draw_circle(Vector2(side, y), 11, Color(1, 0.6, 0, 0.35))
+				draw_circle(Vector2(side, y), 6, Color("ffb703"))

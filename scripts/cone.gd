@@ -1,30 +1,17 @@
-extends Area2D
- 
-var speed = 300.0
- 
+extends Obstacle
+
+## Cône de chantier (vu du dessus). Le toucher fait perdre une vie.
+
+
 func _ready():
+	super()
+	kind = "danger"
 
-	# Même groupe que les voitures : le toucher fait perdre
 
-	add_to_group("enemies")
- 
-func _process(delta):
-
-	position.y += speed * delta
-
-	if position.y > 900:
-
-		queue_free()
- 
+# Dessine le cône vu du dessus : ombre, socle orange et bandes blanches
 func _draw():
-
-	# Cône de chantier vu du dessus
-
-	draw_rect(Rect2(-16, -16, 32, 32), Color("b84a10"))
-
-	draw_circle(Vector2.ZERO, 13, Color("ff7a1a"))
-
-	draw_circle(Vector2.ZERO, 9, Color.WHITE)
-
-	draw_circle(Vector2.ZERO, 5, Color("ff7a1a"))
- 
+	draw_circle(Vector2(4, 6), 19, Color(0, 0, 0, 0.25))   # ombre
+	draw_rect(Rect2(-17, -17, 34, 34), Color("c4471a"))     # socle carré
+	draw_circle(Vector2.ZERO, 14, Color("ff7b29"))         # cône
+	draw_circle(Vector2.ZERO, 9, Color.WHITE)              # bande blanche
+	draw_circle(Vector2.ZERO, 5, Color("ff7b29"))          # pointe
