@@ -44,6 +44,7 @@ var message_tween: Tween
 var combo_tween: Tween
 
 
+# Crée tous les éléments de l'interface au lancement de la partie
 func _ready():
 	# Le HUD continue de fonctionner quand le jeu est en pause
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -53,6 +54,7 @@ func _ready():
 	game_over_menu = _build_game_over()
 
 
+# À chaque image : fait clignoter le message de record et l'alerte d'huile
 func _process(delta):
 	time += delta
 	if record_label.visible:
@@ -109,6 +111,7 @@ func _build_top_bar():
 	add_child(powerups)
 
 
+# Crée les messages au centre de l'écran (zone, combo, alerte, aide, flash rouge)
 func _build_messages():
 	message_label = UIStyle.make_label("", 42, UIStyle.YELLOW, Vector2(0, 290), Vector2(480, 160))
 	message_label.pivot_offset = Vector2(240, 80)
@@ -139,6 +142,7 @@ func _build_messages():
 	add_child(flash)
 
 
+# Crée un fond sombre qui recouvre tout l'écran (pour la pause et la fin)
 func _make_overlay() -> Control:
 	var overlay = Control.new()
 	overlay.size = Vector2(480, 800)
@@ -151,6 +155,7 @@ func _make_overlay() -> Control:
 	return overlay
 
 
+# Crée une colonne (VBoxContainer) qui range les éléments d'un menu
 func _make_menu_box(card: Panel, box_size: Vector2) -> VBoxContainer:
 	var box = VBoxContainer.new()
 	box.position = Vector2(30, 24)
@@ -161,6 +166,7 @@ func _make_menu_box(card: Panel, box_size: Vector2) -> VBoxContainer:
 	return box
 
 
+# Ajoute un texte dans une colonne de menu
 func _box_label(box: VBoxContainer, text: String, font_size: int, color: Color, height: float) -> Label:
 	var label = UIStyle.make_label(text, font_size, color, Vector2.ZERO, Vector2.ZERO)
 	label.custom_minimum_size = Vector2(0, height)
@@ -168,6 +174,7 @@ func _box_label(box: VBoxContainer, text: String, font_size: int, color: Color, 
 	return label
 
 
+# Crée le menu pause : titre, bouton Reprendre et bouton Menu
 func _build_pause_menu() -> Control:
 	var overlay = _make_overlay()
 	var card = UIStyle.make_panel(Vector2(60, 240), Vector2(360, 320))
@@ -242,6 +249,7 @@ func update_stats(score, best, coins, new_lives, distance, goal, shield, magnet,
 	warning_label.visible = slip > 0
 
 
+# Affiche le nom du niveau et colore la barre de progression
 func set_level(number: int, level_name: String, zone_name: String, color: Color):
 	level_text = "NIVEAU %d  ·  %s  ·  %s" % [number, level_name, zone_name.to_upper()]
 	zone_label.text = level_text
@@ -249,6 +257,7 @@ func set_level(number: int, level_name: String, zone_name: String, color: Color)
 	zone_bar.add_theme_stylebox_override("panel", UIStyle.make_box(color, 5, 0))
 
 
+# Affiche un grand message au centre qui "pop" puis disparaît
 func show_message(text: String):
 	message_label.text = text
 	message_label.show()
@@ -264,6 +273,7 @@ func show_message(text: String):
 	message_tween.tween_callback(message_label.hide)
 
 
+# Affiche "COMBO xN !" quand on enchaîne les pièces
 func show_combo(combo: int):
 	combo_label.text = "COMBO x%d !" % combo
 	combo_label.modulate.a = 1.0
@@ -276,12 +286,14 @@ func show_combo(combo: int):
 	combo_tween.tween_property(combo_label, "modulate:a", 0.0, 0.3)
 
 
+# Fait flasher l'écran d'une couleur (rouge quand on est touché)
 func flash_screen(color: Color):
 	flash.color = Color(color, 0.45)
 	var tween = create_tween()
 	tween.tween_property(flash, "color:a", 0.0, 0.4)
 
 
+# Affiche l'écran de défaite avec la distance parcourue
 func show_game_over(score: int, distance: int, goal: int, coins: int, best: int, is_record: bool):
 	final_title.text = "GAME OVER"
 	final_title.add_theme_color_override("font_color", UIStyle.RED)
@@ -293,6 +305,7 @@ func show_game_over(score: int, distance: int, goal: int, coins: int, best: int,
 	_show_end_screen(score, is_record)
 
 
+# Affiche l'écran de victoire avec les étoiles gagnées
 func show_victory(score: int, new_stars: int, coins: int, best: int, is_record: bool, has_next: bool):
 	final_title.text = "NIVEAU RÉUSSI !"
 	final_title.add_theme_color_override("font_color", UIStyle.GREEN)
@@ -306,6 +319,7 @@ func show_victory(score: int, new_stars: int, coins: int, best: int, is_record: 
 	_show_end_screen(score, is_record)
 
 
+# Partie commune aux deux écrans de fin : apparition et score qui défile
 func _show_end_screen(score: int, is_record: bool):
 	playing = false
 	record_label.visible = is_record
@@ -333,6 +347,7 @@ func _unhandled_input(event):
 		_go_menu()
 
 
+# Met le jeu en pause ou le relance
 func toggle_pause():
 	if not playing:
 		return
@@ -343,11 +358,13 @@ func toggle_pause():
 		resume_button.grab_focus()
 
 
+# Bouton Rejouer : enlève la pause et prévient main.gd
 func _restart():
 	get_tree().paused = false
 	restart_requested.emit()
 
 
+# Bouton Menu : enlève la pause et prévient main.gd
 func _go_menu():
 	get_tree().paused = false
 	menu_requested.emit()
@@ -361,6 +378,7 @@ func _draw_hearts():
 		UIStyle.draw_heart(hearts, Vector2(18 + i * 36, 21), 30, color)
 
 
+# Dessine les 3 étoiles de l'écran de victoire (jaunes = gagnées)
 func _draw_stars():
 	var center_x = stars_display.size.x / 2
 	for i in 3:
@@ -368,6 +386,7 @@ func _draw_stars():
 		draw_star(stars_display, Vector2(center_x + (i - 1) * 62, 30), 26, color)
 
 
+# Dessine une étoile à 5 branches (10 points : pointes et creux en alternance)
 static func draw_star(canvas: CanvasItem, center: Vector2, radius: float, color: Color):
 	var points = PackedVector2Array()
 	for i in 10:
@@ -377,6 +396,7 @@ static func draw_star(canvas: CanvasItem, center: Vector2, radius: float, color:
 	canvas.draw_colored_polygon(points, color)
 
 
+# Dessine les bonus actifs (bouclier, aimant) avec leur temps restant
 func _draw_powerups():
 	var y = 0.0
 	if shield_time > 0:
@@ -386,6 +406,7 @@ func _draw_powerups():
 		_draw_pill(Vector2(0, y), "AIMANT  %d" % ceil(magnet_time), UIStyle.RED)
 
 
+# Dessine une "pastille" colorée avec un texte dedans
 func _draw_pill(pos: Vector2, text: String, color: Color):
 	powerups.draw_style_box(UIStyle.make_box(Color(color, 0.9), 18, 0), Rect2(pos, Vector2(170, 36)))
 	powerups.draw_string(UIStyle.font(), pos + Vector2(14, 26), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, UIStyle.DARK)

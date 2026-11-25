@@ -14,6 +14,7 @@ var level_buttons = []
 var time = 0.0
 
 
+# Au lancement du menu : route animée, voiture, boutons et garage
 func _ready():
 	get_tree().paused = false
 
@@ -44,6 +45,7 @@ func _ready():
 	$Box/PlayButton.grab_focus()
 
 
+# À chaque image : le titre flotte et la voiture zigzague
 func _process(delta):
 	time += delta
 	# Le titre flotte doucement
@@ -63,6 +65,7 @@ func _on_play():
 	level_buttons[GameData.level - 1].grab_focus()
 
 
+# Retour depuis le choix du niveau vers le menu principal
 func _on_back():
 	level_box.hide()
 	$Box.show()
@@ -77,27 +80,32 @@ func _on_garage():
 	garage.open()
 
 
+# Le garage est fermé : on réaffiche le menu avec la nouvelle voiture
 func _on_garage_closed():
 	_set_main_visible(true)
 	_update_car()
 	garage_button.grab_focus()
 
 
+# Affiche ou cache les éléments du menu principal
 func _set_main_visible(value: bool):
 	for node in [$Box, $Title, subtitle, record_panel, car]:
 		node.visible = value
 
 
+# Lance le niveau choisi
 func _start_level(number: int):
 	GameData.level = number
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 
+# Échap dans le choix du niveau = retour
 func _unhandled_input(event):
 	if level_box.visible and event.is_action_pressed("ui_cancel"):
 		_on_back()
 
 
+# Bouton Quitter : ferme le jeu
 func _on_quit():
 	get_tree().quit()
 
@@ -124,11 +132,13 @@ func _update_car():
 	car.queue_redraw()
 
 
+# Dessine l'ombre sous la voiture du menu
 func _draw_car_shadow():
 	var car_size = car_sprite.texture.get_size() * car_sprite.scale
 	car.draw_rect(Rect2(-car_size / 2 + Vector2(6, 8), car_size), Color(0, 0, 0, 0.3))
 
 
+# Met en forme le titre, les boutons et le panneau des records
 func setup_design():
 	var title = $Title
 	title.text = "DODGE\nCARS"

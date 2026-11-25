@@ -9,6 +9,7 @@ func _ready():
 	kind = "oil"
 
 
+# Dessine la flaque : plusieurs ronds noirs et des reflets colorés
 func _draw():
 	var oil = Color(0.05, 0.05, 0.08, 0.9)
 	draw_circle(Vector2(0, 0), 24, oil)

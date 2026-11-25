@@ -8,6 +8,7 @@ func _ready():
 	kind = "danger"
 
 
+# Dessine le cône vu du dessus : ombre, socle orange et bandes blanches
 func _draw():
 	draw_circle(Vector2(4, 6), 19, Color(0, 0, 0, 0.25))   # ombre
 	draw_rect(Rect2(-17, -17, 34, 34), Color("c4471a"))     # socle carré

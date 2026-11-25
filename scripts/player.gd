@@ -35,6 +35,7 @@ const CAR_HEIGHT = 135.0          # hauteur de la voiture à l'écran
 var car_size = Vector2(71, 131)   # taille réelle de la voiture à l'écran
 
 
+# Au lancement : position de départ, voiture choisie, effets et fumée
 func _ready():
 	add_to_group("player")
 	position = Vector2(lanes[current_lane], 670)
@@ -65,6 +66,7 @@ func apply_car(settings: Dictionary):
 	shield_time = settings.shield
 
 
+# Reçoit la liste des voies depuis main.gd
 func set_lanes(new_lanes):
 	lanes = new_lanes
 	current_lane = clamp(current_lane, 0, lanes.size() - 1)
@@ -90,6 +92,7 @@ func _unhandled_input(event):
 	current_lane = clamp(current_lane + dir, 0, lanes.size() - 1)
 
 
+# Vérifie si une touche précise vient d'être appuyée
 func _is_key(event, key) -> bool:
 	return event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == key
 
@@ -150,11 +153,13 @@ func _on_area_entered(area):
 			_collect(area)
 
 
+# Ramasse un bonus et prévient main.gd
 func _collect(area):
 	powerup_collected.emit(area.kind, area.global_position)
 	area.queue_free()
 
 
+# Le joueur touche un danger : bouclier, invincibilité ou perte d'une vie
 func _on_danger(obstacle):
 	# Le bouclier encaisse le choc à notre place
 	if shield_time > 0:
@@ -189,6 +194,7 @@ func _draw():
 			]), beam)
 
 
+# Dessine le bouclier et l'aimant par-dessus la voiture
 func _draw_fx():
 	if shield_time > 0:
 		# Le bouclier clignote quand il va bientôt disparaître

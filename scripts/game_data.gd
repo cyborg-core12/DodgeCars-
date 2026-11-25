@@ -112,6 +112,7 @@ var best_stars = [0, 0, 0]    # étoiles gagnées par niveau (0 = pas encore ter
 var total_coins = 0
 
 
+# Au lancement du jeu, on charge la sauvegarde
 func _ready():
 	load_data()
 
@@ -131,6 +132,7 @@ func best_score() -> int:
 	return best_scores[level - 1]
 
 
+# Lit le fichier de sauvegarde (records, étoiles, pièces, voiture choisie)
 func load_data():
 	var config = ConfigFile.new()
 	if config.load(SAVE_PATH) == OK:
@@ -141,6 +143,7 @@ func load_data():
 		car = clamp(config.get_value("joueur", "voiture", 0), 0, CARS.size() - 1)
 
 
+# Écrit toutes les données dans le fichier de sauvegarde
 func save_data():
 	var config = ConfigFile.new()
 	for i in LEVELS.size():

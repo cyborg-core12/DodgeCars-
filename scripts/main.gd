@@ -33,6 +33,7 @@ var game_over = false   # partie terminée (gagnée ou perdue)
 @onready var engine_sound = $EngineSound
 
 
+# Au lancement : on applique les réglages du niveau et on relie les signaux
 func _ready():
 	get_tree().paused = false
 	speed = level.start_speed
@@ -76,6 +77,7 @@ func get_score() -> int:
 	return (int(distance) + bonus_points) * level.score_multiplier
 
 
+# À chaque image : vitesse, distance, apparition des obstacles et arrivée
 func _process(delta):
 	_update_shake(delta)
 	if game_over:
@@ -174,6 +176,7 @@ func spawn_pattern():
 			spawn_pickup("coin", lane, -100 - i * 60)
 
 
+# Crée un objet (cône, huile...) dans une voie, en haut de l'écran
 func spawn_object(scene: PackedScene, lane: int, y := -100.0) -> Node2D:
 	var obj = scene.instantiate()
 	obj.position = Vector2(LANES[lane], y)
@@ -181,10 +184,12 @@ func spawn_object(scene: PackedScene, lane: int, y := -100.0) -> Node2D:
 	return obj
 
 
+# Crée une voiture ennemie dans une voie
 func spawn_car(lane: int, y := -100.0) -> Node2D:
 	return spawn_object(car_scene, lane, y)
 
 
+# Crée un objet à ramasser (pièce ou bonus) dans une voie
 func spawn_pickup(kind: String, lane: int, y: float):
 	var item = pickup_scene.instantiate()
 	item.kind = kind
@@ -207,6 +212,7 @@ func _on_coin_collected(pos: Vector2):
 		hud.show_combo(combo)
 
 
+# Le joueur a pris un bonus : effet de particules et texte
 func _on_powerup_collected(kind: String, pos: Vector2):
 	var texts = {"shield": "BOUCLIER !", "magnet": "AIMANT !", "heart": "+1 VIE"}
 	var colors = {"shield": UIStyle.BLUE, "magnet": UIStyle.RED, "heart": UIStyle.GREEN}
@@ -214,11 +220,13 @@ func _on_powerup_collected(kind: String, pos: Vector2):
 	spawn_float_text(pos, texts[kind], colors[kind])
 
 
+# Le joueur a roulé dans l'huile : petit tremblement et texte
 func _on_player_slipped():
 	shake = 6
 	spawn_float_text(player.position + Vector2(0, -90), "GLISSADE !", UIStyle.PURPLE)
 
 
+# Le bouclier a protégé le joueur : l'obstacle explose
 func _on_shield_broken(obstacle):
 	_destroy(obstacle)
 	shake = 8
@@ -226,6 +234,7 @@ func _on_shield_broken(obstacle):
 	spawn_float_text(player.position + Vector2(0, -90), "PROTÉGÉ !", UIStyle.BLUE)
 
 
+# Le joueur perd une vie mais continue
 func _on_player_crashed(obstacle):
 	_destroy(obstacle)
 	combo = 0
@@ -258,6 +267,7 @@ func _on_player_died(obstacle):
 	hud.show_game_over(score, int(distance), int(level.goal), coins, GameData.best_score(), is_record)
 
 
+# Le joueur a passé la ligne d'arrivée : calcul des étoiles et écran de victoire
 func _win():
 	game_over = true
 	player.alive = false            # plus de collisions
@@ -284,6 +294,7 @@ func _win():
 	hud.show_victory(score, stars, coins, GameData.best_score(), is_record, has_next)
 
 
+# Met à jour l'interface une dernière fois à la fin de la partie
 func _end_hud(score):
 	hud.playing = false
 	hud.update_stats(score, GameData.best_score(), coins, player.lives,
@@ -297,6 +308,7 @@ func _destroy(obstacle):
 	obstacle.queue_free()
 
 
+# Grosse explosion : flammes, étincelles et fumée
 func spawn_explosion(pos: Vector2):
 	spawn_burst(pos, Color("ff9f1c"), 40, 380.0, 9.0)
 	spawn_burst(pos, UIStyle.YELLOW, 20, 250.0, 6.0)
@@ -352,11 +364,13 @@ func restart():
 	get_tree().reload_current_scene()
 
 
+# Passe au niveau suivant
 func next_level():
 	GameData.level += 1
 	restart()
 
 
+# Retour au menu principal
 func go_to_menu():
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/menu.tscn")

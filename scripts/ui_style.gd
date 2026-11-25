@@ -41,6 +41,7 @@ static func style_label(label: Label, font_size: int, color: Color, outline := 8
 	label.add_theme_constant_override("shadow_offset_y", 4)
 
 
+# Crée un texte déjà stylé, à une position et une taille données
 static func make_label(text: String, font_size: int, color: Color, pos: Vector2, label_size: Vector2,
 		align := HORIZONTAL_ALIGNMENT_CENTER) -> Label:
 	var label = Label.new()
@@ -111,6 +112,7 @@ static func recolor_button(button: Button, color: Color) -> void:
 	button.add_theme_stylebox_override("pressed", _button_box(color.darkened(0.1), 2))
 
 
+# Style d'un bouton : couleur + bord foncé en bas (effet 3D)
 static func _button_box(color: Color, depth: int) -> StyleBoxFlat:
 	var box = make_box(color, 16)
 	box.border_color = color.darkened(0.35)
@@ -119,6 +121,7 @@ static func _button_box(color: Color, depth: int) -> StyleBoxFlat:
 	return box
 
 
+# Contour blanc quand un bouton est choisi au clavier
 static func _focus_box() -> StyleBoxFlat:
 	var box = StyleBoxFlat.new()
 	box.draw_center = false
@@ -129,6 +132,7 @@ static func _focus_box() -> StyleBoxFlat:
 	return box
 
 
+# Animation : le bouton grossit ou revient à sa taille normale
 static func _bounce(node: Control, target: float) -> void:
 	if not node.is_inside_tree():
 		return
@@ -150,6 +154,7 @@ static func draw_heart(canvas: CanvasItem, center: Vector2, heart_size: float, c
 	]), color)
 
 
+# Dessine une pièce dorée
 static func draw_coin(canvas: CanvasItem, center: Vector2, radius: float) -> void:
 	canvas.draw_circle(center, radius, Color("c98a0b"))
 	canvas.draw_circle(center, radius * 0.75, YELLOW)

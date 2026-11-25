@@ -27,6 +27,7 @@ var thumbs: Control
 var choose_button: Button
 
 
+# Construit tout l'écran du garage (textes, plateau, flèches, stats, boutons)
 func _ready():
 	size = Vector2(480, 800)
 	for settings in GameData.CARS:
@@ -99,6 +100,7 @@ func _ready():
 	hide()
 
 
+# Ouvre le garage sur la voiture actuellement équipée
 func open():
 	index = GameData.car
 	show()
@@ -106,11 +108,13 @@ func open():
 	choose_button.grab_focus()
 
 
+# Ferme le garage et prévient le menu (signal "closed")
 func close():
 	hide()
 	closed.emit()
 
 
+# À chaque image : animation de la voiture et des barres de stats
 func _process(delta):
 	if not visible:
 		return
@@ -124,6 +128,7 @@ func _process(delta):
 	stats.queue_redraw()
 
 
+# Clavier : ← → pour changer de voiture, Échap pour revenir au menu
 func _unhandled_input(event):
 	if not visible:
 		return
@@ -145,6 +150,7 @@ func _change(dir: int):
 	_refresh(dir)
 
 
+# Équipe la voiture affichée et sauvegarde ce choix
 func _choose():
 	GameData.car = index
 	GameData.save_data()
@@ -211,6 +217,7 @@ func _draw_stage():
 		stage.draw_arc(CAR_CENTER, 132, angle, angle + 0.12, 4, Color(color, 0.7), 4)
 
 
+# Dessine les 3 barres de statistiques de la voiture affichée
 func _draw_stats():
 	var names = ["MANIABILITÉ", "FINESSE", "PROTECTION"]
 	var color = GameData.CARS[index].color
@@ -225,6 +232,7 @@ func _draw_stats():
 				Rect2(bar.position, Vector2(bar.size.x * stat_values[i], bar.size.y)))
 
 
+# Dessine les miniatures de toutes les voitures en bas de l'écran
 func _draw_thumbs():
 	for i in GameData.CARS.size():
 		var slot = Rect2(i * (THUMB_WIDTH + THUMB_GAP), 0, THUMB_WIDTH, 64)
@@ -245,6 +253,7 @@ func _draw_thumbs():
 			thumbs.draw_circle(slot.position + Vector2(THUMB_WIDTH - 10, 10), 6, UIStyle.GREEN)
 
 
+# Clic sur une miniature : on affiche cette voiture
 func _on_thumbs_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var clicked = int(event.position.x / (THUMB_WIDTH + THUMB_GAP))

@@ -17,6 +17,7 @@ var has_changed = false
 var time = 0.0
 
 
+# Au démarrage : on choisit une couleur de voiture au hasard
 func _ready():
 	super()
 	kind = "danger"
@@ -37,6 +38,7 @@ func make_lane_changer(lane_list: Array, current_lane: int):
 	target_lane = current_lane + direction
 
 
+# À chaque image : la voiture descend (script parent) puis change de voie si besoin
 func _process(delta):
 	super(delta)
 	time += delta
@@ -53,6 +55,7 @@ func _process(delta):
 	queue_redraw()
 
 
+# Dessine l'ombre de la voiture et, si besoin, son clignotant
 func _draw():
 	# Ombre sous la voiture
 	draw_rect(Rect2(-35 + 6, -65 + 8, 71, 131), Color(0, 0, 0, 0.3))

@@ -7,6 +7,7 @@ var time = randf() * 10.0
 var attract_speed = 0.0
 
 
+# À chaque image : l'objet descend, ou vole vers le joueur si l'aimant est actif
 func _process(delta):
 	time += delta
 	queue_redraw()
@@ -21,6 +22,7 @@ func _process(delta):
 		super(delta)
 
 
+# Dessine l'objet selon son type (pièce, bouclier, aimant, cœur)
 func _draw():
 	match kind:
 		"coin":

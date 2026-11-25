@@ -42,6 +42,7 @@ var grass_dark: Color
 var road_color: Color
 
 
+# Au lancement : couleurs de la première zone et décor de départ
 func _ready():
 	var first_zone = ZONES[0]
 	grass = first_zone.grass
@@ -67,14 +68,17 @@ func show_finish_line():
 	finish_y = -60.0
 
 
+# Position x du bord gauche de la route
 func road_left() -> float:
 	return lanes[0] - 58
 
 
+# Position x du bord droit de la route
 func road_right() -> float:
 	return lanes[-1] + 58
 
 
+# Crée un élément de décor au hasard (arbre, immeuble...) sur un côté de la route
 func _new_decor(y: float) -> Dictionary:
 	var on_left = randf() < 0.5
 	var x
@@ -91,6 +95,7 @@ func _new_decor(y: float) -> Dictionary:
 	}
 
 
+# À chaque image : défilement de la route et du décor, changement de couleurs
 func _process(delta):
 	scroll += speed * delta
 	if finish_y > -9999.0:
@@ -111,6 +116,7 @@ func _process(delta):
 	queue_redraw()
 
 
+# Dessine l'herbe, la route, les bordures, les lignes et le décor
 func _draw():
 	var left = road_left()
 	var right = road_right()
@@ -177,6 +183,7 @@ func _draw_finish_line(left: float, right: float):
 		HORIZONTAL_ALIGNMENT_CENTER, banner.size.x, 22, Color.WHITE)
 
 
+# Dessine un élément de décor selon son type
 func _draw_decor(item: Dictionary):
 	var p = Vector2(item.x, item.y)
 	var s = item.size

@@ -15,10 +15,12 @@ var kind = "danger"
 var speed_factor = 1.0
 
 
+# Chaque obstacle s'ajoute au groupe "obstacles"
 func _ready():
 	add_to_group("obstacles")
 
 
+# À chaque image : l'objet descend avec la route
 func _process(delta):
 	position.y += world_speed * speed_factor * delta
 	# Supprime l'objet quand il est sorti de l'écran
