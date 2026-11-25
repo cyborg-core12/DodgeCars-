@@ -1,6 +1,6 @@
 extends Control
 
-## Rangée de miniatures de toutes les voitures du garage (cliquables).
+# Miniatures des voitures dans le garage
 
 signal car_clicked(index)
 
@@ -8,24 +8,21 @@ const THUMB_WIDTH = 80.0
 const THUMB_GAP = 8.0
 
 var textures = []
-var selected = 0   # voiture affichée dans la vitrine
-var equipped = 0   # voiture choisie par le joueur
+var selected = 0
+var equipped = 0
 
 
-# Charge l'image de chaque voiture
 func _ready():
 	for settings in GameData.CARS:
 		textures.append(load(settings.texture))
 
 
-# Met à jour la voiture affichée et la voiture équipée
 func set_selection(new_selected: int, new_equipped: int):
 	selected = new_selected
 	equipped = new_equipped
 	queue_redraw()
 
 
-# Dessine une case par voiture, avec la voiture tournée sur le côté
 func _draw():
 	for i in textures.size():
 		var slot = Rect2(i * (THUMB_WIDTH + THUMB_GAP), 0, THUMB_WIDTH, size.y)
@@ -41,12 +38,11 @@ func _draw():
 		draw_texture_rect(texture, Rect2(-car_size / 2, car_size), false)
 		draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 
-		# Point vert sur la voiture équipée
 		if i == equipped:
 			draw_circle(slot.position + Vector2(THUMB_WIDTH - 10, 10), 6, UIStyle.GREEN)
 
 
-# Clic sur une case : on prévient le garage
+# Clic sur une miniature
 func _gui_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var clicked = int(event.position.x / (THUMB_WIDTH + THUMB_GAP))

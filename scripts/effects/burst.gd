@@ -1,11 +1,7 @@
 extends CPUParticles2D
 
-## Petite explosion de particules (pièce ramassée, choc, feux d'artifice...).
-## Les réglages de base sont dans la scène burst.tscn, ce script change
-## seulement la couleur, le nombre et la force des particules.
+# Explosion de particules
 
-
-# Lance l'explosion à la position donnée, puis supprime le nœud
 func start(pos: Vector2, new_color: Color, particle_count: int, power: float, particle_size: float):
 	position = pos
 	color = new_color

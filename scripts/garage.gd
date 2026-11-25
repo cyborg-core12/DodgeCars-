@@ -1,21 +1,18 @@
 extends Control
 
-## Garage (scène garage.tscn) : vitrine pour choisir sa voiture.
-## La voiture est présentée en grand sur un plateau tournant, avec ses statistiques.
-## Flèches (ou ← →) pour changer, "Choisir" pour l'équiper.
+# Garage : choix de la voiture
 
 signal closed
 
-const CAR_CENTER = Vector2(240, 270)   # position de la voiture dans la vitrine
-const SHOW_HEIGHT = 250.0              # hauteur de la voiture dans la vitrine
-const GAME_HEIGHT = 135.0              # hauteur de la voiture en jeu (voir player.gd)
+const CAR_CENTER = Vector2(240, 270)
+const SHOW_HEIGHT = 250.0
+const GAME_HEIGHT = 135.0
 
-var index = 0      # voiture affichée
+var index = 0
 var time = 0.0
 var textures = []
 
 
-# Charge les images des voitures et relie les boutons de la scène
 func _ready():
 	for settings in GameData.CARS:
 		textures.append(load(settings.texture))
@@ -27,7 +24,6 @@ func _ready():
 	hide()
 
 
-# Ouvre le garage sur la voiture actuellement équipée
 func open():
 	index = GameData.car
 	show()
@@ -35,13 +31,11 @@ func open():
 	%ChooseButton.grab_focus()
 
 
-# Ferme le garage et prévient le menu (signal "closed")
 func close():
 	hide()
 	closed.emit()
 
 
-# À chaque image : la voiture "flotte" doucement sur le plateau
 func _process(delta):
 	if not visible:
 		return
@@ -50,7 +44,6 @@ func _process(delta):
 	%CarSprite.rotation = sin(time * 1.2) * 0.04
 
 
-# Clavier : ← → pour changer de voiture, Échap pour revenir au menu
 func _unhandled_input(event):
 	if not visible:
 		return
@@ -65,15 +58,11 @@ func _unhandled_input(event):
 	get_viewport().set_input_as_handled()
 
 
-# ---------- CHANGER DE VOITURE ----------
-
-# Passe à la voiture précédente (-1) ou suivante (+1)
 func _change(dir: int):
 	index = wrapi(index + dir, 0, GameData.CARS.size())
 	_refresh(dir)
 
 
-# Clic sur une miniature : on affiche cette voiture
 func _on_thumb_clicked(clicked: int):
 	if clicked != index:
 		var dir = 1 if clicked > index else -1
@@ -81,19 +70,18 @@ func _on_thumb_clicked(clicked: int):
 		_refresh(dir)
 
 
-# Équipe la voiture affichée et sauvegarde ce choix
+# Équipe la voiture et sauvegarde le choix
 func _choose():
 	GameData.car = index
 	GameData.save_data()
 	_refresh(0)
-	# Petit "pop" de la voiture pour confirmer
 	var normal_scale = %CarSprite.scale
 	%CarSprite.scale = normal_scale * 1.15
 	var tween = create_tween()
 	tween.tween_property(%CarSprite, "scale", normal_scale, 0.25).set_trans(Tween.TRANS_BACK)
 
 
-# Met à jour la vitrine. dir = sens de l'animation (-1, 1 ou 0 = pas d'animation)
+# Met à jour l'affichage de la voiture sélectionnée
 func _refresh(dir: int):
 	var settings = GameData.CARS[index]
 	var texture = textures[index]
@@ -106,16 +94,14 @@ func _refresh(dir: int):
 	%TaglineLabel.text = settings.tagline
 	%Turntable.color = settings.color
 
-	# Statistiques entre 0 et 1
 	var game_width = texture.get_width() * GAME_HEIGHT / texture.get_height()
 	%Stats.set_stats([
-		clamp((settings.handling - 8.0) / 12.0, 0.05, 1.0),   # maniabilité
-		clamp(1.0 - (game_width - 50.0) / 40.0, 0.05, 1.0),    # finesse (petite = plus facile)
-		clamp(settings.shield / 10.0, 0.0, 1.0),               # protection
+		clamp((settings.handling - 8.0) / 12.0, 0.05, 1.0),
+		clamp(1.0 - (game_width - 50.0) / 40.0, 0.05, 1.0),
+		clamp(settings.shield / 10.0, 0.0, 1.0),
 	], settings.color)
 	%Thumbs.set_selection(index, GameData.car)
 
-	# Le bouton change de texte et de couleur (style du thème) si la voiture est déjà équipée
 	if index == GameData.car:
 		%ChooseButton.text = "ÉQUIPÉE"
 		%ChooseButton.theme_type_variation = &"GreenButton"
@@ -123,7 +109,6 @@ func _refresh(dir: int):
 		%ChooseButton.text = "CHOISIR"
 		%ChooseButton.theme_type_variation = &"OrangeButton"
 
-	# La voiture arrive en glissant depuis le côté
 	if dir != 0:
 		%CarSprite.position.x = CAR_CENTER.x + dir * 320
 		var tween = create_tween()

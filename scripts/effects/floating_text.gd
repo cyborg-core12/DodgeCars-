@@ -1,10 +1,7 @@
 extends Label
 
-## Texte qui monte et disparaît (+10, -1 VIE, BOUCLIER !...).
-## main.gd crée une copie de la scène floating_text.tscn à chaque fois.
+# Texte qui monte puis disparaît
 
-
-# Affiche le texte à la position donnée, puis lance l'animation
 func start(pos: Vector2, new_text: String, color: Color):
 	text = new_text
 	position = pos - size / 2
