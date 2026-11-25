@@ -1,0 +1,151 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/garage.gd" id="1_m4cbr"]
+[ext_resource type="Script" path="res://scripts/ui/turntable.gd" id="2_wlqv8"]
+[ext_resource type="Texture2D" path="res://assets/car_red_1.png" id="3_ov3jk"]
+[ext_resource type="Script" path="res://scripts/ui/animated_button.gd" id="4_3m6l1"]
+[ext_resource type="Script" path="res://scripts/ui/stat_bars.gd" id="5_ehpjb"]
+[ext_resource type="Script" path="res://scripts/ui/car_thumbnails.gd" id="6_foee4"]
+
+[node name="Garage" type="Control" unique_id=2031480486]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_m4cbr")
+
+[node name="Shade" type="ColorRect" parent="." unique_id=1669978909]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 800.0
+color = Color(0.03, 0.04, 0.1, 0.8)
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1596245075]
+layout_mode = 0
+offset_top = 18.0
+offset_right = 480.0
+offset_bottom = 78.0
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(1, 0.8235294, 0.24705882, 1)
+text = "GARAGE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="." unique_id=373581617]
+layout_mode = 0
+offset_top = 72.0
+offset_right = 480.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 16
+text = "Choisis ta voiture"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Turntable" type="Node2D" parent="." unique_id=1171198623]
+unique_name_in_owner = true
+position = Vector2(240, 270)
+script = ExtResource("2_wlqv8")
+
+[node name="CarSprite" type="Sprite2D" parent="." unique_id=1347581651]
+unique_name_in_owner = true
+position = Vector2(240, 270)
+texture = ExtResource("3_ov3jk")
+
+[node name="LeftArrow" type="Button" parent="." unique_id=1024394042]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 0
+offset_left = 16.0
+offset_top = 238.0
+offset_right = 72.0
+offset_bottom = 302.0
+focus_mode = 0
+theme_type_variation = &"GreyButton"
+theme_override_font_sizes/font_size = 30
+text = "<"
+script = ExtResource("4_3m6l1")
+
+[node name="RightArrow" type="Button" parent="." unique_id=1214205706]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 0
+offset_left = 408.0
+offset_top = 238.0
+offset_right = 464.0
+offset_bottom = 302.0
+focus_mode = 0
+theme_type_variation = &"GreyButton"
+theme_override_font_sizes/font_size = 30
+text = ">"
+script = ExtResource("4_3m6l1")
+
+[node name="NameLabel" type="Label" parent="." unique_id=1958376569]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 404.0
+offset_right = 480.0
+offset_bottom = 450.0
+theme_override_font_sizes/font_size = 34
+text = "LA ROUGE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TaglineLabel" type="Label" parent="." unique_id=1236025077]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 30.0
+offset_top = 448.0
+offset_right = 450.0
+offset_bottom = 492.0
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.87058824, 0.8862745, 0.9019608, 1)
+theme_override_constants/outline_size = 4
+text = "Description de la voiture"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Stats" type="Control" parent="." unique_id=1605104407]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 498.0
+offset_right = 430.0
+offset_bottom = 588.0
+mouse_filter = 2
+script = ExtResource("5_ehpjb")
+
+[node name="Thumbs" type="Control" parent="." unique_id=1441087354]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 596.0
+offset_right = 456.0
+offset_bottom = 660.0
+script = ExtResource("6_foee4")
+
+[node name="ChooseButton" type="Button" parent="." unique_id=1765474115]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 0
+offset_left = 90.0
+offset_top = 670.0
+offset_right = 390.0
+offset_bottom = 728.0
+theme_type_variation = &"OrangeButton"
+theme_override_font_sizes/font_size = 26
+text = "CHOISIR"
+script = ExtResource("4_3m6l1")
+
+[node name="BackButton" type="Button" parent="." unique_id=697466039]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 0
+offset_left = 90.0
+offset_top = 738.0
+offset_right = 390.0
+offset_bottom = 795.0
+theme_type_variation = &"GreyButton"
+theme_override_font_sizes/font_size = 20
+text = "Retour"
+script = ExtResource("4_3m6l1")

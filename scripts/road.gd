@@ -30,7 +30,7 @@ const ZONES = [
 const BUILDING_COLORS = [Color("e76f51"), Color("457b9d"), Color("8d6a9f"), Color("f4a261")]
 
 var lanes = [130, 240, 350]
-var speed = 300.0
+@export var speed = 300.0   # vitesse de défilement (modifiable dans l'inspecteur)
 var scroll = 0.0     # distance totale défilée (en pixels)
 var zone = 0
 var decor = []       # liste des éléments de décor sur les côtés

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="DodgeCars Part1"
-run/main_scene="uid://b0r2yamwgfx33"
+run/main_scene="res://scenes/menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -25,6 +25,10 @@ window/size/viewport_width=480
 window/size/viewport_height=800
 window/size/mode=2
 window/stretch/mode="canvas_items"
+
+[gui]
+
+theme/custom="res://theme/game_theme.tres"
 
 [physics]
 
