@@ -1,7 +1,6 @@
 extends Node
 
-## Données gardées entre les scènes (chargé automatiquement : "Autoload" GameData).
-## Contient les réglages des 3 niveaux et sauvegarde records et étoiles dans un fichier local.
+
 
 const SAVE_PATH = "user://sauvegarde.cfg"
 
@@ -11,17 +10,17 @@ const LEVELS = [
 		"name": "FACILE",
 		"description": "La campagne · 1200 m · route calme",
 		"color": Color("06d6a0"),
-		"zone": 0,                    # décor (voir road.gd) : 0 = campagne
-		"goal": 1200.0,               # mètres jusqu'à la ligne d'arrivée
-		"start_speed": 260.0,         # vitesse au départ
-		"max_speed": 420.0,           # vitesse juste avant l'arrivée
-		"spawn_start": 1.7,           # secondes entre deux obstacles au départ
-		"spawn_min": 1.1,             # ... et juste avant l'arrivée
+		"zone": 0,                    
+		"goal": 1200.0,               
+		"start_speed": 260.0,         
+		"max_speed": 420.0,           
+		"spawn_start": 1.7,           
+		"spawn_min": 1.1,             
 		"lives": 3,
-		"lane_changers": false,       # voitures qui changent de voie ?
-		"double_cars": 2.0,           # dès quelle progression (0 à 1) : 2 voitures côte à côte (2 = jamais)
-		"oil": false,                 # flaques d'huile ?
-		"bonus_chance": 1.5,          # multiplie la chance d'avoir un bonus
+		"lane_changers": false,       
+		"double_cars": 2.0,           
+		"oil": false,                
+		"bonus_chance": 1.5,          
 		"score_multiplier": 1,
 	},
 	{
@@ -132,7 +131,7 @@ func best_score() -> int:
 	return best_scores[level - 1]
 
 
-# Lit le fichier de sauvegarde (records, étoiles, pièces, voiture choisie)
+
 func load_data():
 	var config = ConfigFile.new()
 	if config.load(SAVE_PATH) == OK:

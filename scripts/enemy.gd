@@ -1,6 +1,6 @@
 extends Obstacle
 
-## Voiture ennemie. Certaines changent de voie en mettant leur clignotant !
+## Voiture ennemie
 
 var textures = [
 	preload("res://assets/car_black_4.png"),
@@ -17,7 +17,7 @@ var has_changed = false
 var time = 0.0
 
 
-# Au démarrage : on choisit une couleur de voiture au hasard
+
 func _ready():
 	super()
 	kind = "danger"
@@ -25,7 +25,6 @@ func _ready():
 	target_x = position.x
 
 
-# Appelé par main.gd pour transformer cette voiture en "changeuse de voie"
 func make_lane_changer(lane_list: Array, current_lane: int):
 	lanes = lane_list
 	lane_changer = true
@@ -38,7 +37,7 @@ func make_lane_changer(lane_list: Array, current_lane: int):
 	target_lane = current_lane + direction
 
 
-# À chaque image : la voiture descend (script parent) puis change de voie si besoin
+
 func _process(delta):
 	super(delta)
 	time += delta
@@ -48,14 +47,14 @@ func _process(delta):
 		has_changed = true
 		target_x = lanes[target_lane]
 
-	# Plus la route va vite, plus le changement de voie est rapide (pour rester évitable)
+	# Plus la route va vite, plus le changement de voie est rapide 
 	position.x = move_toward(position.x, target_x, world_speed * 0.45 * delta)
 	# La voiture tourne légèrement quand elle se déplace sur le côté
 	rotation = clamp(-(target_x - position.x) * 0.004, -0.3, 0.3)
 	queue_redraw()
 
 
-# Dessine l'ombre de la voiture et, si besoin, son clignotant
+
 func _draw():
 	# Ombre sous la voiture
 	draw_rect(Rect2(-35 + 6, -65 + 8, 71, 131), Color(0, 0, 0, 0.3))
