@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/floating_text.gd" id="1_text"]
+
+[node name="FloatingText" type="Label"]
+offset_right = 200.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 26
+text = "+10"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1_text")

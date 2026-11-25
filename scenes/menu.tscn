@@ -1,28 +1,161 @@
-[gd_scene format=3 uid="uid://b0r2yamwgfx33"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://d2d4vqqio1g2t" path="res://scripts/menu.gd" id="1_yqeox"]
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_i6lef"]
+[ext_resource type="Script" path="res://scripts/road.gd" id="2_70i5f"]
+[ext_resource type="Script" path="res://scripts/ui/menu_car.gd" id="3_mj5lg"]
+[ext_resource type="Texture2D" path="res://assets/car_red_1.png" id="4_ufwb2"]
+[ext_resource type="Script" path="res://scripts/ui/animated_button.gd" id="5_6cdou"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_select.tscn" id="6_i42df"]
+[ext_resource type="Script" path="res://scripts/ui/level_select.gd" id="7_7jp70"]
+[ext_resource type="PackedScene" path="res://scenes/ui/garage.tscn" id="8_mxgkd"]
+[ext_resource type="Script" path="res://scripts/garage.gd" id="9_g6gyw"]
 
-[node name="Menu" type="Control" unique_id=1027216335]
+[node name="Menu" type="Control" unique_id=1522819095]
 layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_i6lef")
+
+[node name="Road" type="Node2D" parent="." unique_id=1097824710]
+script = ExtResource("2_70i5f")
+speed = 260.0
+
+[node name="Shade" type="ColorRect" parent="." unique_id=2115210699]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 800.0
+mouse_filter = 2
+color = Color(0.05, 0.06, 0.12, 0.35)
+
+[node name="MenuCar" type="Node2D" parent="." unique_id=1452965995]
+unique_name_in_owner = true
+position = Vector2(240, 700)
+script = ExtResource("3_mj5lg")
+
+[node name="Sprite2D" type="Sprite2D" parent="MenuCar" unique_id=650855798]
+texture = ExtResource("4_ufwb2")
+
+[node name="Title" type="Label" parent="." unique_id=2016043047]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 60.0
+offset_right = 480.0
+offset_bottom = 300.0
+rotation = -0.05
+pivot_offset = Vector2(240, 120)
+theme_override_constants/line_spacing = -22
+theme_override_font_sizes/font_size = 88
+theme_override_colors/font_color = Color(1, 0.8235294, 0.24705882, 1)
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 18
+text = "DODGE
+CARS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="." unique_id=722272623]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 300.0
+offset_right = 480.0
+offset_bottom = 330.0
+theme_override_font_sizes/font_size = 18
+text = "ÉVITE  ·  RAMASSE  ·  SURVIS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Box" type="VBoxContainer" parent="." unique_id=231165426]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 100.0
+offset_top = 345.0
+offset_right = 380.0
+offset_bottom = 545.0
+theme_override_constants/separation = 14
+
+[node name="PlayButton" type="Button" parent="Box" unique_id=1176498303]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_type_variation = &"OrangeButton"
+theme_override_font_sizes/font_size = 34
+text = "JOUER"
+script = ExtResource("5_6cdou")
+
+[node name="GarageButton" type="Button" parent="Box" unique_id=1945640245]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"BlueButton"
+theme_override_font_sizes/font_size = 26
+text = "GARAGE"
+script = ExtResource("5_6cdou")
+
+[node name="QuitButton" type="Button" parent="Box" unique_id=2015334860]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"GreyButton"
+theme_override_font_sizes/font_size = 24
+text = "QUITTER"
+script = ExtResource("5_6cdou")
+
+[node name="RecordPanel" type="Panel" parent="." unique_id=1980421015]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 90.0
+offset_top = 560.0
+offset_right = 390.0
+offset_bottom = 626.0
+
+[node name="RecordLabel" type="Label" parent="RecordPanel" unique_id=895606971]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 6.0
+offset_right = 300.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 0.8235294, 0.24705882, 1)
+text = "RECORD : 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CoinsLabel" type="Label" parent="RecordPanel" unique_id=1711991913]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 38.0
+offset_right = 300.0
+offset_bottom = 66.0
+theme_override_font_sizes/font_size = 14
+text = "PIÈCES GAGNÉES : 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintLabel" type="Label" parent="." unique_id=446773962]
+layout_mode = 0
+offset_top = 765.0
+offset_right = 480.0
+offset_bottom = 793.0
+theme_override_font_sizes/font_size = 14
+theme_override_constants/outline_size = 4
+text = "← → / Q D : changer de voie   ·   P : pause"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelSelect" type="Control" parent="." unique_id=1132239050 instance=ExtResource("6_i42df")]
+unique_name_in_owner = true
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_yqeox")
+mouse_filter = 2
+script = ExtResource("7_7jp70")
 
-[node name="Title" type="Label" parent="." unique_id=1407206064]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="Box" type="VBoxContainer" parent="." unique_id=624513934]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PlayButton" type="Button" parent="Box" unique_id=841922667]
-layout_mode = 2
-
-[node name="QuitButton" type="Button" parent="Box" unique_id=522116779]
-layout_mode = 2
+[node name="Garage" type="Control" parent="." unique_id=2031480486 instance=ExtResource("8_mxgkd")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("9_g6gyw")

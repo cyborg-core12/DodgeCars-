@@ -1,0 +1,101 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_select.gd" id="1_l0h45"]
+[ext_resource type="Script" path="res://scripts/ui/animated_button.gd" id="2_7l8mc"]
+
+[node name="LevelSelect" type="Control" unique_id=1132239050]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_l0h45")
+
+[node name="Box" type="VBoxContainer" parent="." unique_id=1334646454]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 318.0
+offset_right = 420.0
+offset_bottom = 758.0
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Box" unique_id=290170054]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "CHOISIS TON NIVEAU"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level1Button" type="Button" parent="Box" unique_id=1851093926]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_type_variation = &"GreenButton"
+theme_override_font_sizes/font_size = 24
+text = "NIVEAU 1"
+script = ExtResource("2_7l8mc")
+
+[node name="Level1Info" type="Label" parent="Box" unique_id=530660493]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.87058824, 0.8862745, 0.9019608, 1)
+theme_override_constants/outline_size = 4
+text = "Description
+Record : 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level2Button" type="Button" parent="Box" unique_id=1478056286]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_type_variation = &"OrangeButton"
+theme_override_font_sizes/font_size = 24
+text = "NIVEAU 2"
+script = ExtResource("2_7l8mc")
+
+[node name="Level2Info" type="Label" parent="Box" unique_id=2095485813]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.87058824, 0.8862745, 0.9019608, 1)
+theme_override_constants/outline_size = 4
+text = "Description
+Record : 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level3Button" type="Button" parent="Box" unique_id=1349477214]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_type_variation = &"RedButton"
+theme_override_font_sizes/font_size = 24
+text = "NIVEAU 3"
+script = ExtResource("2_7l8mc")
+
+[node name="Level3Info" type="Label" parent="Box" unique_id=214897803]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.87058824, 0.8862745, 0.9019608, 1)
+theme_override_constants/outline_size = 4
+text = "Description
+Record : 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Box" unique_id=1266467326]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_type_variation = &"GreyButton"
+theme_override_font_sizes/font_size = 20
+text = "Retour"
+script = ExtResource("2_7l8mc")

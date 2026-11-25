@@ -29,23 +29,20 @@ var magnet_time = 0.0
 var slip_time = 0.0
 var time = 0.0
 
-var fx: Node2D   # calque dessiné PAR-DESSUS la voiture (bouclier, aimant)
+# Nœud "FX" de la scène : calque dessiné PAR-DESSUS la voiture (bouclier, aimant)
+@onready var fx = $FX
 
 const CAR_HEIGHT = 135.0          # hauteur de la voiture à l'écran
 var car_size = Vector2(71, 131)   # taille réelle de la voiture à l'écran
 
 
-# Au lancement : position de départ, voiture choisie, effets et fumée
+# Au lancement : position de départ, voiture choisie et effets
 func _ready():
 	add_to_group("player")
 	position = Vector2(lanes[current_lane], 670)
 	area_entered.connect(_on_area_entered)
-	apply_car(GameData.car_settings())
-
-	fx = Node2D.new()
-	add_child(fx)
 	fx.draw.connect(_draw_fx)
-	_create_exhaust()
+	apply_car(GameData.car_settings())
 
 
 # Applique la voiture choisie dans le garage : image, taille, maniabilité et bouclier
@@ -61,6 +58,9 @@ func apply_car(settings: Dictionary):
 	shape.size = car_size * Vector2(0.8, 0.86)
 	$CollisionShape2D.shape = shape
 	$CollisionShape2D.position = Vector2.ZERO
+
+	# La fumée (nœud "Exhaust" de la scène) sort à l'arrière de la voiture
+	$Exhaust.position = Vector2(-car_size.x * 0.22, car_size.y / 2 - 2)
 
 	move_speed = settings.handling
 	shield_time = settings.shield
@@ -205,24 +205,3 @@ func _draw_fx():
 		for i in 6:
 			var angle = time * 3.0 + i * TAU / 6.0
 			fx.draw_circle(Vector2(cos(angle), sin(angle)) * 95, 5, Color(1, 0.3, 0.4, 0.85))
-
-
-# Fumée du pot d'échappement (particules)
-func _create_exhaust():
-	var smoke = CPUParticles2D.new()
-	smoke.position = Vector2(-car_size.x * 0.22, car_size.y / 2 - 2)
-	smoke.amount = 24
-	smoke.lifetime = 0.5
-	smoke.local_coords = false
-	smoke.direction = Vector2(0, 1)
-	smoke.spread = 15
-	smoke.gravity = Vector2.ZERO
-	smoke.initial_velocity_min = 180
-	smoke.initial_velocity_max = 260
-	smoke.scale_amount_min = 3
-	smoke.scale_amount_max = 6
-	var gradient = Gradient.new()
-	gradient.colors = PackedColorArray([Color(0.85, 0.85, 0.9, 0.5), Color(0.85, 0.85, 0.9, 0)])
-	smoke.color_ramp = gradient
-	smoke.show_behind_parent = true
-	add_child(smoke)

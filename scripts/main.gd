@@ -12,6 +12,8 @@ var car_scene = preload("res://scenes/enemy.tscn")
 var cone_scene = preload("res://scenes/cone.tscn")
 var oil_scene = preload("res://scenes/oil.tscn")
 var pickup_scene = preload("res://scenes/pickup.tscn")
+var burst_scene = preload("res://scenes/effects/burst.tscn")
+var floating_text_scene = preload("res://scenes/effects/floating_text.tscn")
 
 var speed = 0.0
 var distance = 0.0
@@ -49,7 +51,7 @@ func _ready():
 	player.powerup_collected.connect(_on_powerup_collected)
 	player.slipped.connect(_on_player_slipped)
 
-	hud.max_lives = level.lives
+	hud.set_max_lives(level.lives)
 	hud.restart_requested.connect(restart)
 	hud.menu_requested.connect(go_to_menu)
 	hud.next_requested.connect(next_level)
@@ -315,40 +317,18 @@ func spawn_explosion(pos: Vector2):
 	spawn_burst(pos, Color(0.4, 0.4, 0.45), 16, 150.0, 14.0)
 
 
-# Petite explosion de particules
+# Petite explosion de particules : on crée une copie de la scène burst.tscn
 func spawn_burst(pos: Vector2, color: Color, amount: int, power: float, particle_size: float):
-	var particles = CPUParticles2D.new()
-	particles.position = pos
-	particles.one_shot = true
-	particles.explosiveness = 0.95
-	particles.amount = amount
-	particles.lifetime = 0.7
-	particles.spread = 180
-	particles.direction = Vector2.UP
-	particles.gravity = Vector2(0, 300)
-	particles.initial_velocity_min = power * 0.4
-	particles.initial_velocity_max = power
-	particles.damping_min = 80
-	particles.damping_max = 160
-	particles.scale_amount_min = particle_size * 0.5
-	particles.scale_amount_max = particle_size
-	var gradient = Gradient.new()
-	gradient.colors = PackedColorArray([color, Color(color, 0.0)])
-	particles.color_ramp = gradient
-	effects.add_child(particles)
-	particles.emitting = true
-	get_tree().create_timer(1.2).timeout.connect(particles.queue_free)
+	var burst = burst_scene.instantiate()
+	effects.add_child(burst)
+	burst.start(pos, color, amount, power, particle_size)
 
 
-# Texte qui monte et disparaît (+10, -1 VIE...)
+# Texte qui monte et disparaît (+10, -1 VIE...) : copie de la scène floating_text.tscn
 func spawn_float_text(pos: Vector2, text: String, color: Color):
-	var label = UIStyle.make_label(text, 26, color, pos - Vector2(100, 20), Vector2(200, 40))
+	var label = floating_text_scene.instantiate()
 	effects.add_child(label)
-	var tween = label.create_tween().set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 70, 0.8) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(0.3)
-	tween.chain().tween_callback(label.queue_free)
+	label.start(pos, text, color)
 
 
 # Tremblement de l'écran
